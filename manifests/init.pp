@@ -1,54 +1,51 @@
-# == Class: sap
-#
 # This module manages SAP prerequisites for several types of SAP installations
 # based on corresponding SAP OSS notes
 #
-# === Parameters
+# @summary Installs prerequisites for an SAP environment on RedHat derivatives
 #
-# * `base`
+# @param base
 #   Set to true when SAP ABAP, JAVA stack, SAP ADS or SAP BO is used
 #   Default value is false
 #
-# * `base_ext`
+# @param base_ext
 #   Set to true when SAP ADS or SAP BO is used
 #   Default value is false
 #
-# * `experimental`
+# @param experimental
 #   Set to true when experimental features should be used
 #   (i.e. SAP Router)
 #   Default value is false
 #
-# * `ads`
+# @param ads
 #   Set to true when Adobe Document Serverice is used
 #   Default value is false
 #
-# * `bo`
+# @param bo
 #   Set to true when SAP Business Objects is used
 #   Default value is false
 #
-# * `cloudconnector`
+# @param cloudconnector
 #   Set to true when SAP Cloud Connector is used
 #   Default value is false
 #
-# * `router`
+# @param router
 #   Set to true when SAP Router is used
 #   Default value is false
 #
-# * `router_oss_realm`
-#   Specify OSS realm for SAP router connection
+# @param router_oss_realm
+#   Specify OSS realm for SAP router connection. For example,
+#   `'p:CN=hostname.domain.tld, OU=0123456789, OU=SAProuter, O=SAP, C=DE'`
 #   Default value is undef
 #
-# * `router_rules`
+# @param router_rules
 #   Specify array of rules for the SAP router
 #   Default value is undef
 #
-# * `distro_text`
+# @param distro_text
 #   Modify text in /etc/redhat-release
 #   Default value is undef
 #
-# === Variables
-#
-# === Examples
+# @example ADS Application server
 #
 #  class { '::sap':
 #    ads      => true,
@@ -65,38 +62,20 @@
 # Copyright 2016 Thomas Bendler
 #
 class sap (
-  $base              = $sap::params::base,
-  $base_extended     = $sap::params::base_extended,
-  $experimental      = $sap::params::experimental,
-  $ads               = $sap::params::ads,
-  $bo                = $sap::params::bo,
-  $cloudconnector    = $sap::params::cloudconnector,
-  $hana              = $sap::params::hana,
-  $router            = $sap::params::router,
-  $router_oss_realm  = undef,
-  $router_rules      = undef,
-  $distro_text       = undef
+  Boolean $base = $sap::params::base,
+  Boolean $base_extended = $sap::params::base_extended,
+  Boolean $experimental = $sap::params::experimental,
+  Boolean $ads = $sap::params::ads,
+  Boolean $bo = $sap::params::bo,
+  Boolean $cloudconnector = $sap::params::cloudconnector,
+  Boolean $hana = $sap::params::hana,
+  Boolean $router = $sap::params::router,
+  Optional[String] $router_oss_realm  = undef,
+  Optional[Array[String]] $router_rules = undef,
+  Optional[String] $distro_text = undef
 ) inherits sap::params {
 
-  # Validate parameters
-  validate_bool($base)
-  validate_bool($base_extended)
-  validate_bool($experimental)
-  validate_bool($ads)
-  validate_bool($bo)
-  validate_bool($cloudconnector)
-  validate_bool($router)
-  if ($router_oss_realm != undef) {
-    validate_string($router_oss_realm)
-  }
-  if ($router_rules != undef) {
-    validate_array($router_rules)
-  }
-  if ($distro_text != undef) {
-    validate_string($distro_text)
-  }
-
-  # Fail if dependencies not met
+  # Fail if dependencies are not met
   if (($ads != false) or ($bo != false) or ($hana !=false)) {
     if ($base != true) {
       fail('Dependency parameter $sap::base not set to true!')
@@ -107,10 +86,15 @@ class sap (
   }
 
   # Start workflow
-  if $sap::params::linux {
-    class{ '::sap::install': }
-    -> class{ '::sap::config': }
-    ~> class{ '::sap::service': }
+  if $facts['os']['family'] == 'RedHat' {
+    # Ensure the install, config, and service componets happen within here
+    contain '::sap::install'
+    contain '::sap::config'
+    contain '::sap::service'
+
+    Class{ '::sap::install': }
+    -> Class{ '::sap::config': }
+    ~> Class{ '::sap::service': }
     -> Class['sap']
   } else {
     warning('The current operating system is not supported!')

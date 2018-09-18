@@ -1,0 +1,126 @@
+---
+sap::params::package_uuidd: 'uuidd'
+# Common packages
+sap::params::packages_common:
+  - "%{lookup('sap::params::package_uuidd')}"
+  - '@large-systems'
+  - '@compat-libraries'
+  - '@network-file-system-client'
+  - '@performance'
+
+# Base packages
+sap::params::packages_base:
+  - 'compat-libstdc++-33'
+  - 'elfutils-libelf-devel'
+  - 'gcc-c++'
+  - 'glibc'
+  - 'glibc-devel'
+  - 'glibc-headers'
+  - 'libaio'
+  - 'libaio-devel'
+  - 'libstdc++'
+  - 'libstdc++-devel'
+  - 'rar'
+  - 'tcsh'
+  - 'xorg-x11-utils'
+
+# Base Extensions
+sap::params::base_extensions:
+  - 'expat'
+  - 'libgcc'
+  - 'libX11'
+  - 'libXau'
+  - 'libxcb'
+
+# Adobe Document Services
+sap::params::packages_ads:
+  - 'autoconf'
+  - 'automake'
+  - 'cyrus-sasl'
+  - 'expat'
+  - 'fontconfig'
+  - 'freetype'
+  - 'keyutils-libs'
+  - 'krb5-libs'
+  - 'libcom_err'
+  - 'libidn'
+  - 'libidn-devel'
+  - 'libselinux'
+  - 'libssh2'
+  - 'nspr'
+  - 'nss'
+  - 'nss-softokn'
+  - 'nss-softokn-freebl'
+  - 'nss-util'
+  - 'openldap'
+  - 'openssl'
+  - 'transfig'
+  - 'zlib'
+
+# Business Objects
+sap::params::packages_bo:
+  - 'libXcursor'
+  - 'libXext'
+  - 'libXfixes'
+  - 'libXrender'
+
+# HANA packages
+sap::params::packages_hana:
+  - 'bind-utils'
+  - 'cario'
+  - 'expect'
+  - 'graphviz'
+  - 'gtk2'
+  - 'iptraf-ng'
+  - 'java-1.8.0-openjdk'
+  - 'krb5-libs'
+  - 'krb5-workstation'
+  - 'libcanberra-gtk2'
+  - 'libicu'
+  - 'libpng12'
+  - 'libssh2'
+  - 'libtool-ltdl'
+  - 'net-tools'
+  - 'numactl'
+  - 'openssl'
+  - 'openssl098e'
+  - 'PackageKit-gtk3-module'
+  - 'xfsprogs'
+  - 'xulrunner'
+
+# SAP Cloud Connector
+sap::params::packages_cloudconnector:
+  - 'sapjvm_8'
+  - 'com.sap.scc-ui'
+
+# SAP Router Packages
+sap::params::packages_saprouter:
+  - 'sap-router'
+
+# Experimental Packages
+sap::params::packages_experimental:
+  - 'sap-common'
+  - 'sap-toolbox'
+  - 'sap-sapcar'
+
+# Config Definitions
+sap::params::config_sysctl_conf: '/etc/sysctl.conf'
+sap::params::config_sysctl_conf_template: 'sap/etc/sysctl.conf.erb'
+sap::params::config_limits_conf: '/etc/security/limits.d/00-sap.conf'
+sap::params::config_limits_conf_template: 'sap/etc/security/limits.d/00-sap.conf.erb'
+sap::params::config_redhat_release_conf: '/etc/redhat-release'
+
+# SAP Router Configurations
+sap::params::config_saproutetab: '/opt/sap/R99/profile/saproutetab'
+sap::params::config_saproutetab_template: 'sap/profile/saproutetab.erb'
+sap::params::config_saprouter_sysconfig: '/etc/sysconfig/sap-router'
+sap::params::config_saprouter_sysconfig_template: 'sap/etc/sysconfig/sap-router.erb'
+
+# General Service Definition
+sap::params::service_uuidd: 'uuidd'
+
+# SAP Cloud Connector Service
+sap::params::service_scc: 'scc_daemon'
+
+# SAP Router Service
+sap::params::service_saprouter: 'sap-router'

@@ -1,0 +1,5 @@
+---
+# RHEL 6 compatibility
+sap::params::packages_base:
+  - 'pdksh'
+  - 'compat-gcc-34'

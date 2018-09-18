@@ -12,39 +12,63 @@
 #
 class sap::install {
 
-  include ::sap::install::common
+  sap::install::package_set { 'common':
+    package_list  => $sap::params::packages_common,
+  }
 
   if $sap::base {
-    include ::sap::install::base
+    sap::install::package_set { 'base':
+      package_list  => $sap::params::packages_base,
+    }
   }
 
   if $sap::base_extended {
-    include ::sap::install::base_extended
+    sap::install::package_set { 'base_extended':
+      package_list  => $sap::params::packages_base_extended,
+    }
   }
 
   if $sap::ads {
-    include ::sap::install::ads
+    sap::install::package_set { 'ads':
+      package_list  => $sap::params::packages_ads,
+    }
   }
 
-  if $::operatingsystemmajrelease == '7' {
+  # Attempt to install RHEL 7.x applications
+  if $sap::bo or $sap::cloudconnector or $sap::hana {
+    if $facts['os']['release']['major'] != '7' {
+      fail('HANA, Business Objects, and Cloud Connector are only supported on 7.x or greater!')
+    }
+
     if $sap::bo {
-      include ::sap::install::bo
+      sap::install::packages_set { 'bo':
+        package_list  => $sap::params::packages_bo,
+      }
     }
 
     if $sap::cloudconnector {
-      include ::sap::install::cloudconnector
+      sap::install::packages_set { 'cloudconnector':
+        package_list  => $sap::params::packages_cloudconnector,
+      }
     }
 
     if $sap::hana {
-      include ::sap::install::hana
+      sap::install::packages_set { 'hana':
+        package_list  => $sap::params::packages_hana,
+      }
     }
   }
 
+  # Experimental support
   if $sap::experimental {
-    include ::sap::install::experimental
+    sap::install::package_set { 'experimental':
+      package_list  => $sap::params::packages_experimental,
+    }
 
     if $sap::router {
-      include ::sap::install::router
+      sap::install::packages_set { 'saprouter':
+        package_list  => $sap::params::packages_saprouter,
+      }
     }
   }
 }

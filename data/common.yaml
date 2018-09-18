@@ -1,0 +1,31 @@
+---
+lookup_options:
+  sap::params::packages_common:
+    merge: 'unique'
+  sap::params::packages_base:
+    merge: 'unique'
+  sap::params::packages_base_extensions:
+    merge: 'unique'
+  sap::params::packages_ads:
+    merge: 'unique'
+  sap::params::packages_hana:
+    merge: 'unique'
+  sap::params::cloudconnector:
+    merge: 'unique'
+  sap::params::saprouter:
+    merge: 'unique'
+  sap::params::experimental:
+    merge: 'unique'
+
+# Standard Netweaver Definitions
+sap::ads: false
+sap::base: false
+sap::base_extended: false
+sap::bo: false
+sap::cloudconnector: false
+sap::hana: false
+sap::router: false
+
+# Additional settings
+sap::distro_text: 'original'
+sap::experimental: false

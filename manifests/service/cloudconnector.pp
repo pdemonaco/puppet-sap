@@ -16,6 +16,6 @@ class sap::service::cloudconnector {
   service { $sap::params::service_scc:
     ensure  => 'running',
     enable  => true,
-    require => Package[$sap::params::package_scc];
+    require => Sap::Install::Package_set[$sap::params::package_scc];
   }
 }

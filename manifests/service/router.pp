@@ -16,6 +16,6 @@ class sap::service::router {
   service { $sap::params::service_saprouter:
     ensure  => 'running',
     enable  => true,
-    require => Package[$sap::params::package_saprouter];
+    require => Sap::Install::Package_set[$sap::params::packages_saprouter];
   }
 }

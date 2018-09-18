@@ -1,0 +1,5 @@
+---
+# Extra Packages for RHEL for SAP Business Applications
+sap::params::packages_common:
+  - 'sapconf'
+  - 'tuned-profiles-sap'
