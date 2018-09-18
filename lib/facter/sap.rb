@@ -7,42 +7,42 @@
 #
 
 # Create a hash for SAP items
-sap_items = Hash.new ""
+sap_items = Hash.new ''
 
 # Detect SAP SID by analyzing /sapmnt
-if File.exist?( "/sapmnt" )
-  Dir.foreach( "/sapmnt" ) do |item|
-    sap_items["sid"] = item.match(/[A-Z0-9]{3}/)
+if File.exist?('/sapmnt')
+  Dir.foreach('/sapmnt') do |item|
+    sap_items['sid'] = item.match(%r{[A-Z0-9]{3}})
   end
 end
 
 # Detect type by analyzing /usr/sap/SID/INSTANCE
-if Dir.exist?( "/usr/sap/" + sap_items["sid"] + "/D*" ) 
-  sap_items["type"] = "abap"
+if Dir.exist?('/usr/sap/' + sap_items['sid'] + '/D*')
+  sap_items['type'] = 'abap'
 end
-if Dir.exist?( "/usr/sap/" + sap_items["sid"] + "/D*/j2ee" )
-  sap_items["type"] = "dual"
+if Dir.exist?('/usr/sap/' + sap_items['sid'] + '/D*/j2ee')
+  sap_items['type'] = 'dual'
 end
-if Dir.exist?( "/usr/sap/" + sap_items["sid"] + "/J*" )
-  sap_items["type"] = "java"
+if Dir.exist?('/usr/sap/' + sap_items['sid'] + '/J*')
+  sap_items['type'] = 'java'
 end
 
 # Detect instance by analyzing /usr/sap/SID/INSTANCE
-if Dir.exist?( "/usr/sap/" + sap_items["sid"] + "/D*" )
-  sap_items["instance"] = "dialog"
+if Dir.exist?('/usr/sap/' + sap_items['sid'] + '/D*')
+  sap_items['instance'] = 'dialog'
 end
-if Dir.exist?( "/usr/sap/" + sap_items["sid"] + "/DV*" )
-  sap_items["instance"] = "central"
+if Dir.exist?('/usr/sap/' + sap_items['sid'] + '/DV*')
+  sap_items['instance'] = 'central'
 end
-if Dir.exist?( "/usr/sap/" + sap_items["sid"] + "/J*" )
-  sap_items["instance"] = "dialog"
+if Dir.exist?('/usr/sap/' + sap_items['sid'] + '/J*')
+  sap_items['instance'] = 'dialog'
 end
-if Dir.exist?( "/usr/sap/" + sap_items["sid"] + "/SCS*" )
-  sap_items["instance"] = "central"
+if Dir.exist?('/usr/sap/' + sap_items['sid'] + '/SCS*')
+  sap_items['instance'] = 'central'
 end
 
 # Set facts based on sap_keyname
-if !sap_items.nil? then
+unless sap_items.nil?
   sap_items.each do |key, val|
     unless val.nil?
       Facter.add("sap_#{key}") { setcode { val } }
