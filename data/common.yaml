@@ -4,9 +4,11 @@ lookup_options:
     merge: 'unique'
   sap::params::packages_base:
     merge: 'unique'
-  sap::params::packages_base_extensions:
+  sap::params::packages_base_extended:
     merge: 'unique'
   sap::params::packages_ads:
+    merge: 'unique'
+  sap::params::packages_bo:
     merge: 'unique'
   sap::params::packages_hana:
     merge: 'unique'

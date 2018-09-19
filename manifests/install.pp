@@ -37,23 +37,23 @@ class sap::install {
   # Attempt to install RHEL 7.x applications
   if $sap::bo or $sap::cloudconnector or $sap::hana {
     if $facts['os']['release']['major'] != '7' {
-      fail('HANA, Business Objects, and Cloud Connector are only supported on 7.x or greater!')
+      warning('HANA, Business Objects, and Cloud Connector are only supported on 7.x or greater, skipping!')
     }
 
     if $sap::bo {
-      sap::install::packages_set { 'bo':
+      sap::install::package_set { 'bo':
         package_list  => $sap::params::packages_bo,
       }
     }
 
     if $sap::cloudconnector {
-      sap::install::packages_set { 'cloudconnector':
+      sap::install::package_set { 'cloudconnector':
         package_list  => $sap::params::packages_cloudconnector,
       }
     }
 
     if $sap::hana {
-      sap::install::packages_set { 'hana':
+      sap::install::package_set { 'hana':
         package_list  => $sap::params::packages_hana,
       }
     }
@@ -66,7 +66,7 @@ class sap::install {
     }
 
     if $sap::router {
-      sap::install::packages_set { 'saprouter':
+      sap::install::package_set { 'saprouter':
         package_list  => $sap::params::packages_saprouter,
       }
     }

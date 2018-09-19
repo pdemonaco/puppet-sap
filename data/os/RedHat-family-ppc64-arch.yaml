@@ -1,19 +1,19 @@
 ---
 # Primarily adds the 32 bit versions of various 64 bit required packages. 
-sap::params::base_extensions:
+sap::params::packages_base_extended:
   - 'expat.ppc'
   - 'glibc.ppc'
   - 'libgcc.ppc'
   - 'libX11.ppc'
   - 'libXau.ppc'
   - 'libxcb.ppc'
+  - 'krb5-libs.ppc'
 
 sap::params::packages_ads:
   - 'cyrus-sasl-lib.ppc'
   - 'fontconfig.ppc'
   - 'freetype.ppc'
   - 'keyutils-libs.ppc'
-  - 'krb5-libs.ppc'
   - 'libcom_err.ppc'
   - 'libidn.ppc'
   - 'libidn-devel.ppc'

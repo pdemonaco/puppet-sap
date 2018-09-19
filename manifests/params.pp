@@ -15,12 +15,15 @@
 # @param packages_base [Array[String]]
 #   These packages should be relevant to any SAP Netweaver machine.
 #   
-# @param packages_base_extensions [Array[String]]
+# @param packages_base_extended [Array[String]]
 #   ADS, Business Objects, and HANA (1.0?) systems need these packages in
 #   addition to the base set.
 #   
 # @param packages_ads [Array[String]]
 #   Special packages uniquely required by ADS
+#   
+# @param packages_bo [Array[String]]
+#   Special packages that Business Objects depends on.
 #   
 # @param packages_hana [Array[String]]
 #   Special packages that HANA (1.0?) depends on.
@@ -43,8 +46,9 @@ class sap::params (
   String $package_uuidd = undef,
   Array[String] $packages_common = [],
   Array[String] $packages_base = [],
-  Array[String] $packages_base_extensions = [],
+  Array[String] $packages_base_extended = [],
   Array[String] $packages_ads = [],
+  Array[String] $packages_bo = [],
   Array[String] $packages_hana = [],
   Array[String] $packages_cloudconnector = [],
   Array[String] $packages_saprouter = [],
@@ -57,7 +61,7 @@ class sap::params (
   String $config_saproutetab = undef,
   String $config_saproutetab_template = undef,
   String $config_saprouter_sysconfig = undef,
-  String $config_saurouter_sysconfig_template = undef,
+  String $config_saprouter_sysconfig_template = undef,
   String $service_uuidd = undef,
   String $service_scc = undef,
   String $service_saprouter = undef,

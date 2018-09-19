@@ -15,7 +15,7 @@ class sap::service {
   service { $sap::params::service_uuidd:
     ensure  => 'running',
     enable  => true,
-    require => Sap::Install::Package_set[$sap::params::packages_common];
+    require => Sap::Install::Package_set['common'];
   }
 
   if $sap::cloudconnector {

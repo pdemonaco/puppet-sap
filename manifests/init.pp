@@ -88,14 +88,13 @@ class sap (
   # Start workflow
   if $facts['os']['family'] == 'RedHat' {
     # Ensure the install, config, and service componets happen within here
-    contain '::sap::install'
-    contain '::sap::config'
-    contain '::sap::service'
+    contain sap::install
+    contain sap::config
+    contain sap::service
 
-    Class{ '::sap::install': }
-    -> Class{ '::sap::config': }
-    ~> Class{ '::sap::service': }
-    -> Class['sap']
+    Class['::sap::install']
+    -> Class['::sap::config']
+    ~> Class['::sap::service']
   } else {
     warning('The current operating system is not supported!')
   }

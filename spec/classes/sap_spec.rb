@@ -1,26 +1,54 @@
 require 'spec_helper'
 
 describe 'sap', :type => :class do
-  on_supported_os.each do |os, facts|
+  test_on = {
+    :hardwaremodels => ['x86_64', 'ppc64'],
+    :supported_os   => [
+      {
+        'operatingsystem'        => 'RedHat',
+        'operatingsystemrelease' => ['6', '7'],
+      },
+    ],
+  }
+
+  on_supported_os(test_on).each do |os, facts|
     context "on #{os}" do
       let(:facts) do
         facts
       end
-    let(:params) { {base: true, base_extended: true, experimental: true, ads: true, bo: true, cloudconnector: true, hana: true, router: true, router_oss_realm: 'p:CN=sr.domain.tld, OU=0123456789, OU=SAProuter, O=SAP, C=DE', router_rules: ['P0,1  *  192.168.1.1  3200  password  # SID dispatcher', 'P0,1  *  192.168.1.2  3200  password  # SID dispatcher'], distro_text: 'Best distribution ever build version 7.2' } }
+
+      let(:params) do
+        {
+          base: true,
+          base_extended: true,
+          experimental: true,
+          ads: true,
+          bo: true,
+          cloudconnector: true,
+          hana: true,
+          router: true,
+          router_oss_realm: 'p:CN=sr.domain.tld, OU=0123456789, OU=SAProuter, O=SAP, C=DE',
+          router_rules: [
+            'P0,1  *  192.168.1.1  3200  password  # SID dispatcher',
+            'P0,1  *  192.168.1.2  3200  password  # SID dispatcher'
+          ],
+          distro_text: 'Best distribution ever build version 7.2'
+        }
+      end
 
       it { is_expected.to compile.with_all_deps }
 
       it { is_expected.to contain_class('sap::params') }
       it { is_expected.to contain_class('sap::install') }
-      it { is_expected.to contain_class('sap::install::common') }
-      it { is_expected.to contain_class('sap::install::base') }
-      it { is_expected.to contain_class('sap::install::base_extended') }
-      it { is_expected.to contain_class('sap::install::experimental') }
-      it { is_expected.to contain_class('sap::install::ads') }
-      it { is_expected.to contain_class('sap::install::bo') }
-      it { is_expected.to contain_class('sap::install::cloudconnector') }
-      it { is_expected.to contain_class('sap::install::hana') }
-      it { is_expected.to contain_class('sap::install::router') }
+      it { is_expected.to contain_sap__install__package_set('common') }
+      it { is_expected.to contain_sap__install__package_set('base') }
+      it { is_expected.to contain_sap__install__package_set('base_extended') }
+      it { is_expected.to contain_sap__install__package_set('experimental') }
+      it { is_expected.to contain_sap__install__package_set('ads') }
+      it { is_expected.to contain_sap__install__package_set('bo') }
+      it { is_expected.to contain_sap__install__package_set('cloudconnector') }
+      it { is_expected.to contain_sap__install__package_set('hana') }
+      it { is_expected.to contain_sap__install__package_set('saprouter') }
       it { is_expected.to contain_class('sap::config') }
       it { is_expected.to contain_class('sap::config::common') }
       it { is_expected.to contain_class('sap::config::base') }
@@ -48,16 +76,19 @@ describe 'sap', :type => :class do
 
       # SAP Base extensions packages
       it { is_expected.to contain_package('expat').with_ensure('installed') }
-      it { is_expected.to contain_package('expat.i686').with_ensure('installed') }
-      it { is_expected.to contain_package('glibc.i686').with_ensure('installed') }
       it { is_expected.to contain_package('libgcc').with_ensure('installed') }
-      it { is_expected.to contain_package('libgcc.i686').with_ensure('installed') }
       it { is_expected.to contain_package('libX11').with_ensure('installed') }
-      it { is_expected.to contain_package('libX11.i686').with_ensure('installed') }
       it { is_expected.to contain_package('libXau').with_ensure('installed') }
-      it { is_expected.to contain_package('libXau.i686').with_ensure('installed') }
       it { is_expected.to contain_package('libxcb').with_ensure('installed') }
-      it { is_expected.to contain_package('libxcb.i686').with_ensure('installed') }
+      if facts[:architecture] == 'x86_64'
+        it { is_expected.to contain_package('expat.i686').with_ensure('installed') }
+        it { is_expected.to contain_package('glibc.i686').with_ensure('installed') }
+        it { is_expected.to contain_package('libgcc.i686').with_ensure('installed') }
+        it { is_expected.to contain_package('libX11.i686').with_ensure('installed') }
+        it { is_expected.to contain_package('libXau.i686').with_ensure('installed') }
+        it { is_expected.to contain_package('libxcb.i686').with_ensure('installed') }
+      end
+
 
       # Experimental packages
       it { is_expected.to contain_package('sap-common').with_ensure('installed') }
@@ -68,61 +99,86 @@ describe 'sap', :type => :class do
       it { is_expected.to contain_package('autoconf').with_ensure('installed') }
       it { is_expected.to contain_package('automake').with_ensure('installed') }
       it { is_expected.to contain_package('transfig').with_ensure('installed') }
-      it { is_expected.to contain_package('cyrus-sasl-lib.i686').with_ensure('installed') }
-      it { is_expected.to contain_package('fontconfig.i686').with_ensure('installed') }
-      it { is_expected.to contain_package('freetype.i686').with_ensure('installed') }
-      it { is_expected.to contain_package('keyutils-libs.i686').with_ensure('installed') }
-      it { is_expected.to contain_package('krb5-libs.i686').with_ensure('installed') }
-      it { is_expected.to contain_package('libcom_err.i686').with_ensure('installed') }
-      it { is_expected.to contain_package('libidn.i686').with_ensure('installed') }
-      it { is_expected.to contain_package('libidn-devel.i686').with_ensure('installed') }
-      it { is_expected.to contain_package('libselinux.i686').with_ensure('installed') }
-      it { is_expected.to contain_package('nspr.i686').with_ensure('installed') }
-      it { is_expected.to contain_package('nss.i686').with_ensure('installed') }
-      it { is_expected.to contain_package('nss-softokn.i686').with_ensure('installed') }
-      it { is_expected.to contain_package('nss-softokn-freebl.i686').with_ensure('installed') }
-      it { is_expected.to contain_package('nss-util.i686').with_ensure('installed') }
-      it { is_expected.to contain_package('openldap.i686').with_ensure('installed') }
-      it { is_expected.to contain_package('zlib.i686').with_ensure('installed') }
-
-      # SAP BO packges
-      it { is_expected.to contain_package('compat-libstdc++-33.i686').with_ensure('installed') }
-      it { is_expected.to contain_package('libstdc++.i686').with_ensure('installed') }
-      it { is_expected.to contain_package('libXcursor').with_ensure('installed') }
-      it { is_expected.to contain_package('libXcursor.i686').with_ensure('installed') }
-      it { is_expected.to contain_package('libXext').with_ensure('installed') }
-      it { is_expected.to contain_package('libXext.i686').with_ensure('installed') }
-      it { is_expected.to contain_package('libXfixes').with_ensure('installed') }
-      it { is_expected.to contain_package('libXfixes.i686').with_ensure('installed') }
-      it { is_expected.to contain_package('libXrender').with_ensure('installed') }
-      it { is_expected.to contain_package('libXrender.i686').with_ensure('installed') }
-
-      # SAP Cloud connector packages
-      it { is_expected.to contain_package('sapjvm_8').with_ensure('installed') }
-      it { is_expected.to contain_package('com.sap.scc-ui').with_ensure('installed') }
-
-      # SAP HANA packages
-      it { is_expected.to contain_package('PackageKit-gtk3-module').with_ensure('installed') }
-      it { is_expected.to contain_package('bind-utils').with_ensure('installed') }
-      it { is_expected.to contain_package('cairo').with_ensure('installed') }
-      it { is_expected.to contain_package('expect').with_ensure('installed') }
-      it { is_expected.to contain_package('graphviz').with_ensure('installed') }
-      it { is_expected.to contain_package('gtk2').with_ensure('installed') }
-      it { is_expected.to contain_package('iptraf-ng').with_ensure('installed') }
-      it { is_expected.to contain_package('java-1.8.0-openjdk').with_ensure('installed') }
+      it { is_expected.to contain_package('cyrus-sasl-lib').with_ensure('installed') }
+      it { is_expected.to contain_package('fontconfig').with_ensure('installed') }
+      it { is_expected.to contain_package('freetype').with_ensure('installed') }
+      it { is_expected.to contain_package('keyutils-libs').with_ensure('installed') }
       it { is_expected.to contain_package('krb5-libs').with_ensure('installed') }
-      it { is_expected.to contain_package('krb5-workstation').with_ensure('installed') }
-      it { is_expected.to contain_package('libcanberra-gtk2').with_ensure('installed') }
-      it { is_expected.to contain_package('libicu').with_ensure('installed') }
-      it { is_expected.to contain_package('libpng12').with_ensure('installed') }
-      it { is_expected.to contain_package('libssh2').with_ensure('installed') }
-      it { is_expected.to contain_package('libtool-ltdl').with_ensure('installed') }
-      it { is_expected.to contain_package('net-tools').with_ensure('installed') }
-      it { is_expected.to contain_package('numactl').with_ensure('installed') }
-      it { is_expected.to contain_package('openssl098e').with_ensure('installed') }
-      it { is_expected.to contain_package('openssl').with_ensure('installed') }
-      it { is_expected.to contain_package('xfsprogs').with_ensure('installed') }
-      it { is_expected.to contain_package('xulrunner').with_ensure('installed') }
+      it { is_expected.to contain_package('libcom_err').with_ensure('installed') }
+      it { is_expected.to contain_package('libidn').with_ensure('installed') }
+      it { is_expected.to contain_package('libidn-devel').with_ensure('installed') }
+      it { is_expected.to contain_package('libselinux').with_ensure('installed') }
+      it { is_expected.to contain_package('nspr').with_ensure('installed') }
+      it { is_expected.to contain_package('nss').with_ensure('installed') }
+      it { is_expected.to contain_package('nss-softokn').with_ensure('installed') }
+      it { is_expected.to contain_package('nss-softokn-freebl').with_ensure('installed') }
+      it { is_expected.to contain_package('nss-util').with_ensure('installed') }
+      it { is_expected.to contain_package('openldap').with_ensure('installed') }
+      it { is_expected.to contain_package('zlib').with_ensure('installed') }
+      if facts[:architecture] == 'x86_64'
+        it { is_expected.to contain_package('cyrus-sasl-lib.i686').with_ensure('installed') }
+        it { is_expected.to contain_package('fontconfig.i686').with_ensure('installed') }
+        it { is_expected.to contain_package('freetype.i686').with_ensure('installed') }
+        it { is_expected.to contain_package('keyutils-libs.i686').with_ensure('installed') }
+        it { is_expected.to contain_package('krb5-libs.i686').with_ensure('installed') }
+        it { is_expected.to contain_package('libcom_err.i686').with_ensure('installed') }
+        it { is_expected.to contain_package('libidn.i686').with_ensure('installed') }
+        it { is_expected.to contain_package('libidn-devel.i686').with_ensure('installed') }
+        it { is_expected.to contain_package('libselinux.i686').with_ensure('installed') }
+        it { is_expected.to contain_package('nspr.i686').with_ensure('installed') }
+        it { is_expected.to contain_package('nss.i686').with_ensure('installed') }
+        it { is_expected.to contain_package('nss-softokn.i686').with_ensure('installed') }
+        it { is_expected.to contain_package('nss-softokn-freebl.i686').with_ensure('installed') }
+        it { is_expected.to contain_package('nss-util.i686').with_ensure('installed') }
+        it { is_expected.to contain_package('openldap.i686').with_ensure('installed') }
+        it { is_expected.to contain_package('zlib.i686').with_ensure('installed') }
+      end
+
+      # These packages are only supported on RHEL 7
+      if facts.dig(:os, :release, :major) != '7' 
+        # SAP BO packges
+        it { is_expected.to contain_package('libXcursor').with_ensure('installed') }
+        it { is_expected.to contain_package('libXext').with_ensure('installed') }
+        it { is_expected.to contain_package('libXfixes').with_ensure('installed') }
+        it { is_expected.to contain_package('libXrender').with_ensure('installed') }
+        if facts[:architecture] == 'x86_64'
+          it { is_expected.to contain_package('compat-libstdc++-33.i686').with_ensure('installed') }
+          it { is_expected.to contain_package('libstdc++.i686').with_ensure('installed') }
+          it { is_expected.to contain_package('libXcursor.i686').with_ensure('installed') }
+          it { is_expected.to contain_package('libXext.i686').with_ensure('installed') }
+          it { is_expected.to contain_package('libXfixes.i686').with_ensure('installed') }
+          it { is_expected.to contain_package('libXrender.i686').with_ensure('installed') }
+        end
+
+        # SAP Cloud connector packages
+        it { is_expected.to contain_package('sapjvm_8').with_ensure('installed') }
+        it { is_expected.to contain_package('com.sap.scc-ui').with_ensure('installed') }
+
+        # SAP HANA packages
+        it { is_expected.to contain_package('PackageKit-gtk3-module').with_ensure('installed') }
+        it { is_expected.to contain_package('bind-utils').with_ensure('installed') }
+        it { is_expected.to contain_package('cairo').with_ensure('installed') }
+        it { is_expected.to contain_package('expect').with_ensure('installed') }
+        it { is_expected.to contain_package('graphviz').with_ensure('installed') }
+        it { is_expected.to contain_package('gtk2').with_ensure('installed') }
+        it { is_expected.to contain_package('iptraf-ng').with_ensure('installed') }
+        it { is_expected.to contain_package('java-1.8.0-openjdk').with_ensure('installed') }
+        it { is_expected.to contain_package('krb5-libs').with_ensure('installed') }
+        it { is_expected.to contain_package('krb5-workstation').with_ensure('installed') }
+        it { is_expected.to contain_package('libcanberra-gtk2').with_ensure('installed') }
+        it { is_expected.to contain_package('libicu').with_ensure('installed') }
+        it { is_expected.to contain_package('libpng12').with_ensure('installed') }
+        it { is_expected.to contain_package('libssh2').with_ensure('installed') }
+        it { is_expected.to contain_package('libtool-ltdl').with_ensure('installed') }
+        it { is_expected.to contain_package('net-tools').with_ensure('installed') }
+        it { is_expected.to contain_package('numactl').with_ensure('installed') }
+        it { is_expected.to contain_package('openssl098e').with_ensure('installed') }
+        it { is_expected.to contain_package('openssl').with_ensure('installed') }
+        it { is_expected.to contain_package('xfsprogs').with_ensure('installed') }
+        it { is_expected.to contain_package('xulrunner').with_ensure('installed') }
+      else
+        it { is_expected.to contain_warning(%r{HANA, Business Objects, and Cloud Connector are only supported on 7.x or greater!}) }
+      end
 
       # SAP router package
       it { is_expected.to contain_package('sap-router').with_ensure('installed') }
