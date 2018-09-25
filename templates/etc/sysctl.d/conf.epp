@@ -1,6 +1,8 @@
 <%- |   Array[String] $header_comment,
         Hash $entries
 | -%>
+# Managed by Puppet
+# Do not modify this file directly, changes will be overwritten!
 <% unless(empty($header_comment)) {
   $header_comment.each | $comment_line | { -%>
 # <%= $comment_line %>

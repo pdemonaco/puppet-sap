@@ -241,21 +241,14 @@ describe 'sap', type: :class do
       # SAP Linux configuration
       if facts[:operatingsystemmajrelease] == '7'
         # Test the content of the sap config file
-        it { 
-          is_expected.to contain_file('/etc/sysctl.d/10-sap-base.conf').with(
-            ensure: 'file',
-            content: [
-              '# Derived from SAP documentation and the output of sapconf
-# See the RHEL7 master note https://launchpad.support.sap.com/#/notes/2002167 for detail
-# Note that kernel.shmall and kernel.shmmax are left at defaults
-# kernel.sem: Per sapconf 0.98-15 as of 2018-09-21
-kernel.sem = 1250 256000 100 8192
-# vm.max_map_count: See https://launchpad.support.sap.com/#/notes/900929
-vm.max_map_count = 2000000
-'
-            ],
-          )
-        }
+        it { is_expected.to contain_file('/etc/sysctl.d/00-sap-base.conf').with_ensure('file') }
+
+        # Ensure the contents of the file match our expectations
+        it 'is expected to contain valid SAP sysctl entries in /etc/sysctl.d/00-sap-base.conf' do
+          content = catalogue.resource('file', '/etc/sysctl.d/00-sap-base.conf').send(:parameters)[:content]
+          expect(content).to match(%r{\nkernel[.]sem = 1250 256000 100 8192\n})
+          expect(content).to match(%r{\nvm[.]max_map_count = 2000000\n})
+        end
       end
       it { is_expected.to contain_file('/etc/security/limits.d/00-sap.conf').with_ensure('file') }
       it 'is expected to generate valid content for 00-sap.conf - generic part' do
@@ -358,11 +351,11 @@ vm.max_map_count = 2000000
       it { is_expected.to compile.with_all_deps }
 
       # Check the sysctl file
-      it { is_expected.to contain_file('/etc/sysctl.d/10-sap-db2.conf') }
+      it { is_expected.to contain_file('/etc/sysctl.d/00-sap-db2.conf') }
 
       # Ensure the contents of the file match our expectations
-      it 'is expected to contain valid db2 sysctl entries in /etc/sysctl.d/10-sap-db2.conf' do
-        content = catalogue.resource('file', '/etc/sysctl.d/10-sap-db2.conf').send(:parameters)[:content]
+      it 'is expected to contain valid db2 sysctl entries in /etc/sysctl.d/00-sap-db2.conf' do
+        content = catalogue.resource('file', '/etc/sysctl.d/00-sap-db2.conf').send(:parameters)[:content]
         expect(content).to match(%r{\nkernel[.]shmmni = 1890\n})
         expect(content).to match(%r{\nkernel[.]shmmax = 7930249216\n})
         expect(content).to match(%r{\nkernel[.]shmall = 3872192\n})

@@ -2,8 +2,8 @@
 sap::params::config_sysctl:
   base:
     path: '/etc/sysctl.d'
-    sequence: 10
-    template: 'sap/etc/sysctl.conf.d.epp'
+    sequence: '00'
+    template: 'sap/etc/sysctl.d/conf.epp'
     header_comment:
       - 'Derived from SAP documentation and the output of sapconf'
       - 'See the RHEL7 master note https://launchpad.support.sap.com/#/notes/2002167 for detail'
@@ -21,8 +21,8 @@ sap::params::config_sysctl:
         value: 2000000
   db2:
     path: '/etc/sysctl.d'
-    sequence: 10
-    template: 'sap/etc/sysctl.conf.d.epp'
+    sequence: '00'
+    template: 'sap/etc/sysctl.d/conf.epp'
     header_comment:
       - 'Kernel parameters per IBM documentation. Version 10.5'
       - 'https://www.ibm.com/support/knowledgecenter/en/SSEPGG_10.5.0/com.ibm.db2.luw.qb.server.doc/doc/c0057140.html'
@@ -52,7 +52,7 @@ sap::params::config_sysctl:
           - 'MSL: 250'
           - 'MNS: 256000'
           - 'OPM: 32'
-          - 'MNI: 256 * RAM(bytes) / PAGE_SIZE'
+          - 'MNI: 256 * RAM in GiB'
         calc_type: 'compound'
         content:
           - calc_type: 'value'
@@ -92,3 +92,9 @@ sap::params::config_sysctl:
           - 'Leaves the total VM allocation to unlimited but prevent weird behavior'
         calc_type: 'value'
         value: 0
+
+# Limits config
+sap::params::config_limits:
+  base:
+    path: '/etc/security/limits.d'
+    sequence: '00'
