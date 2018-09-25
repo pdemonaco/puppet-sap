@@ -12,13 +12,15 @@
 #
 class sap::config {
 
-  include ::sap::config::common
+  include sap::config::common
+
+  include sap::config::sysctl
 
   if 'base' in $sap::enabled_components {
-    include ::sap::config::base
+    include sap::config::base
   }
 
   if 'router' in $sap::enabled_components {
-    include ::sap::config::router
+    include sap::config::router
   }
 }

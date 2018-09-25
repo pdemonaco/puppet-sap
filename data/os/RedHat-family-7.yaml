@@ -20,14 +20,14 @@ sap::params::config_sysctl:
         calc_type: 'value'
         value: 2000000
   db2:
-    path: '/etc/sysctl.d/'
+    path: '/etc/sysctl.d'
     sequence: 10
     template: 'sap/etc/sysctl.conf.d.epp'
     header_comment:
       - 'Kernel parameters per IBM documentation. Version 10.5'
       - 'https://www.ibm.com/support/knowledgecenter/en/SSEPGG_10.5.0/com.ibm.db2.luw.qb.server.doc/doc/c0057140.html'
     entries:
-      kernel.shmni:
+      kernel.shmmni:
         comment:
           - '256 * RAM size in GiB'
         calc_type: 'calculated'

@@ -1,14 +1,7 @@
-# Class: sap::install
+# Packages are installed based on the selections provided to the main sap class
+# using sane defaults configured in hiera.
 #
-# This class install the package requirements for SAP Netweaver
-#
-# Parameters:   This class has no parameters
-#
-# Actions:      This class has no actions
-#
-# Requires:     This class has no requirements
-#
-# Sample Usage:
+# @summary Installs the packages associated with the selected sets
 #
 class sap::install {
 

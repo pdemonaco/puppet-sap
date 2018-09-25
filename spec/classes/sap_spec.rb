@@ -6,7 +6,7 @@ describe 'sap', type: :class do
     :supported_os => [
       {
         'operatingsystem' => 'RedHat',
-        'operatingsystemrelease' => ['6', '7'],
+        'operatingsystemrelease' => ['7'],
       },
       {
         'operatingsystem' => 'CentOS',
@@ -98,6 +98,7 @@ describe 'sap', type: :class do
       it { is_expected.to contain_class('sap::config') }
       it { is_expected.to contain_class('sap::config::common') }
       it { is_expected.to contain_class('sap::config::base') }
+      it { is_expected.to contain_class('sap::config::sysctl') }
       it { is_expected.to contain_class('sap::config::router') }
       it { is_expected.to contain_class('sap::service') }
       it { is_expected.to contain_class('sap::service::router') }
@@ -336,26 +337,42 @@ vm.max_map_count = 2000000
       let(:facts) do
         facts.merge(
           {
-            page_size: 4096,
+            page_size: 4_096,
             memory: {
               system: {
-                total_bytes: 7930249216,
+                total_bytes: 7_930_249_216,
               },
-            }
+            },
           }
         )
       end
 
       let(:params) do
         {
-           enabled_components: [
-             'db2',
-           ],
+          enabled_components: [
+            'db2',
+          ],
         }
       end
 
       it { is_expected.to compile.with_all_deps }
 
+      # Check the sysctl file
+      it { is_expected.to contain_file('/etc/sysctl.d/10-sap-db2.conf') }
+
+      # Ensure the contents of the file match our expectations
+      it 'is expected to contain valid db2 sysctl entries in /etc/sysctl.d/10-sap-db2.conf' do
+        content = catalogue.resource('file', '/etc/sysctl.d/10-sap-db2.conf').send(:parameters)[:content]
+        expect(content).to match(%r{\nkernel[.]shmmni = 1890\n})
+        expect(content).to match(%r{\nkernel[.]shmmax = 7930249216\n})
+        expect(content).to match(%r{\nkernel[.]shmall = 3872192\n})
+        expect(content).to match(%r{\nkernel[.]sem = 250 256000 32 1890\n})
+        expect(content).to match(%r{\nkernel[.]msgmni = 7562\n})
+        expect(content).to match(%r{\nkernel[.]msgmax = 65536\n})
+        expect(content).to match(%r{\nkernel[.]msgmnb = 65536\n})
+        expect(content).to match(%r{\nvm[.]swappiness = 0\n})
+        expect(content).to match(%r{\nvm[.]overcommit_memory = 0\n})
+      end
     end
   end
 end
