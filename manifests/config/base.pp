@@ -1,22 +1,27 @@
-# Class: sap::config::base
+# This class configures the limits and sysctl parameters based on the valuse
+# provided in sap::param::config_sysctl
 #
-# This class contain the base configuration for SAP Netweaver
-#
-# Parameters:   This module has no parameters
-#
-# Actions:      This module has no actions
-#
-# Requires:     This module has no requirements
-#
-# Sample Usage:
+# @summary Configures sysctl and limits for the selected systems.
 #
 class sap::config::base {
 
-  # SAP Netweaver configuration
-  file { $sap::params::config_sysctl_conf:
-    ensure  => file,
-    mode    => '0644',
-    content => template($sap::params::config_sysctl_conf_template);
+  # Configure Kernel Parameters
+  $sap::params::config_sysctl.each | $component, $parameters | {
+    if $component in $sap::enabled_components {
+      $path = $parameters['path']
+      $sequence = $parameters['sequence']
+
+      $sysctl_arguments = {
+        'header_comment' => $parameters['header_comment'],
+        'entries'        => $parameters['entries'],
+      }
+
+      file { "${path}/${sequence}-sap-${component}.conf":
+        ensure  => file,
+        mode    => '0644',
+        content => epp($parameters['template'], $sysctl_arguments);
+      }
+    }
   }
 
   file { $sap::params::config_limits_conf:

@@ -1,0 +1,16 @@
+<%- |   Array[String] $header_comment,
+        Hash $entries
+| -%>
+<% unless(empty($header_comment)) {
+  $header_comment.each | $comment_line | { -%>
+# <%= $comment_line %>
+<%  }
+} -%>
+<% $entries.each | $param, $data | { -%>
+<% if 'comment' in $data { -%>
+<% $data['comment'].each | $comment_line | { -%>
+# <%= $param %>: <%= $comment_line %>
+<% }
+} -%>
+<%= sap::sysctl_line($param, $data) %>
+<% } -%>

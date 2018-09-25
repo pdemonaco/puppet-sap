@@ -18,11 +18,12 @@ class sap::service {
     require => Sap::Install::Package_set['common'];
   }
 
-  if $sap::cloudconnector {
+  if 'cloudconnector' in $sap::enabled_components and
+    $facts['os']['release']['major'] == '7' {
     include ::sap::service::cloudconnector
   }
 
-  if $sap::router {
+  if 'router' in $sap::enabled_components {
     include ::sap::service::router
   }
 }

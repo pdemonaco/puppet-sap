@@ -4,10 +4,6 @@
 #
 # @summary This module contains the parameters for SAP Netweaver
 #
-# @param package_uuidd [String]
-#   The name of the uuidd package for this system. This package should be
-#   defined within packages_common!
-#
 # @param packages_common [Array[String]]
 #   A complete list of packages common to all distros. This is primarily uuidd,
 #   however, it also includes the package sets that sapconf would deploy.
@@ -39,32 +35,80 @@
 #   Special SAP tools and utilities including sapcar and others... Appears to be
 #   custom built?
 #
+# @param service_uuidd [String]
+#   Name of the uuidd service. This is used to enable the daemon after the
+#   installation completes.
+#
+# @param service_scc [String]
+#   SAP Cloud Connector service name used for enabling the service.
+#
+# @param service_saprouter [String]
+#   
 # @example Simple inclusion of this package.
 #   include sap::params
 #
 class sap::params (
-  String $package_uuidd = undef,
-  Array[String] $packages_common = [],
-  Array[String] $packages_base = [],
-  Array[String] $packages_base_extended = [],
-  Array[String] $packages_ads = [],
-  Array[String] $packages_bo = [],
-  Array[String] $packages_hana = [],
-  Array[String] $packages_cloudconnector = [],
-  Array[String] $packages_saprouter = [],
-  Array[String] $packages_experimental = [],
-  String $config_sysctl_conf = undef,
-  String $config_sysctl_conf_template = undef,
-  String $config_limits_conf = undef,
-  String $config_limits_conf_template = undef,
-  String $config_redhat_release_conf = undef,
-  String $config_saproutetab = undef,
-  String $config_saproutetab_template = undef,
-  String $config_saprouter_sysconfig = undef,
-  String $config_saprouter_sysconfig_template = undef,
-  String $service_uuidd = undef,
-  String $service_scc = undef,
-  String $service_saprouter = undef,
+  Array[String] $packages_common                        = [],
+  Array[String] $packages_base                          = [],
+  Array[String] $packages_base_extended                 = [],
+  Array[String] $packages_ads                           = [],
+  Array[String] $packages_bo                            = [],
+  Array[String] $packages_hana                          = [],
+  Array[String] $packages_cloudconnector                = [],
+  Array[String] $packages_saprouter                     = [],
+  Array[String] $packages_experimental                  = [],
+  String $config_sysctl_conf                            = undef,
+  String $config_sysctl_conf_template                   = undef,
+  String $config_limits_conf                            = undef,
+  String $config_limits_conf_template                   = undef,
+  String $config_redhat_release_conf                    = undef,
+  String $config_saproutetab                            = undef,
+  String $config_saproutetab_template                   = undef,
+  String $config_saprouter_sysconfig                    = undef,
+  String $config_saprouter_sysconfig_template           = undef,
+  String $service_uuidd                                 = undef,
+  String $service_scc                                   = undef,
+  String $service_saprouter                             = undef,
+  Hash[
+    String,
+    Hash[
+      String,
+      Variant[
+        String,
+        Integer,
+        Array[String],
+        Hash[
+          String,
+          Variant[
+            Hash[
+              String,
+              Variant[
+                String,
+                Integer,
+                Array[
+                  Variant[
+                    String,
+                    Hash[
+                      String,
+                      Variant[
+                        String,
+                        Integer,
+                      ]
+                    ],
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]
+  ] $config_sysctl = {},
 ){
-  # Nothing to do here, we just recieve parameters.
+
+  # These components depend on 'base' and 'base_extendend'
+  $advanced_components = ['bo', 'ads', 'hana']
+
+  # RHEL 7 only componetns
+  $rhel7_components = ['bo', 'cloudconnector', 'hana']
 }

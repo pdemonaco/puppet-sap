@@ -14,11 +14,11 @@ class sap::config {
 
   include ::sap::config::common
 
-  if $sap::base {
+  if 'base' in $sap::enabled_components {
     include ::sap::config::base
   }
 
-  if $sap::router {
+  if 'router' in $sap::enabled_components {
     include ::sap::config::router
   }
 }

@@ -1,0 +1,94 @@
+---
+sap::params::config_sysctl:
+  base:
+    path: '/etc/sysctl.d'
+    sequence: 10
+    template: 'sap/etc/sysctl.conf.d.epp'
+    header_comment:
+      - 'Derived from SAP documentation and the output of sapconf'
+      - 'See the RHEL7 master note https://launchpad.support.sap.com/#/notes/2002167 for detail'
+      - 'Note that kernel.shmall and kernel.shmmax are left at defaults'
+    entries:
+      kernel.sem:
+        comment:
+          - 'Per sapconf 0.98-15 as of 2018-09-21'
+        calc_type: 'value'
+        value: '1250 256000 100 8192'
+      vm.max_map_count:
+        comment:
+          - 'See https://launchpad.support.sap.com/#/notes/900929'
+        calc_type: 'value'
+        value: 2000000
+  db2:
+    path: '/etc/sysctl.d/'
+    sequence: 10
+    template: 'sap/etc/sysctl.conf.d.epp'
+    header_comment:
+      - 'Kernel parameters per IBM documentation. Version 10.5'
+      - 'https://www.ibm.com/support/knowledgecenter/en/SSEPGG_10.5.0/com.ibm.db2.luw.qb.server.doc/doc/c0057140.html'
+    entries:
+      kernel.shmni:
+        comment:
+          - '256 * RAM size in GiB'
+        calc_type: 'calculated'
+        base: "%{facts.memory.system.total_bytes}"
+        divisor: 1073741824
+        multiplier: 256
+      kernel.shmmax:
+        comment:
+          - 'RAM size in bytes'
+        calc_type: 'value'
+        value: "%{facts.memory.system.total_bytes}"
+      kernel.shmall:
+        comment: 
+          - 'RAM size divided by default system page size multiplied by 2'
+        calc_type: 'calculated'
+        base: "%{facts.memory.system.total_bytes}"
+        divisor: "%{facts.page_size}"
+        multiplier: 2
+      kernel.sem:
+        comment:
+          - 'Semaphore parameters'
+          - 'MSL: 250'
+          - 'MNS: 256000'
+          - 'OPM: 32'
+          - 'MNI: 256 * RAM(bytes) / PAGE_SIZE'
+        calc_type: 'compound'
+        content:
+          - calc_type: 'value'
+            value: 250
+          - calc_type: 'value'
+            value: 256000
+          - calc_type: 'value'
+            value: 32
+          - calc_type: 'calculated'
+            base: "%{facts.memory.system.total_bytes}"
+            divisor: 1073741824
+            multiplier: 256
+      kernel.msgmni:
+        comment:
+          - '1024 * RAM size in GiB'
+        calc_type: 'calculated'
+        base: "%{facts.memory.system.total_bytes}"
+        divisor: 1073741824
+        multiplier: 1024
+      kernel.msgmax:
+        comment:
+          - 'Exactly 65,536'
+        calc_type: 'value'
+        value: 65536
+      kernel.msgmnb:
+        comment:
+          - 'Message queue tuning may be necessary. Monitor via ipcs -q and increase as needed'
+        calc_type: 'value'
+        value: 65536
+      vm.swappiness:
+        comment:
+          - 'Instructs linux to prefer keeping application memory over file caching'
+        calc_type: 'value'
+        value: 0
+      vm.overcommit_memory:
+        comment:
+          - 'Leaves the total VM allocation to unlimited but prevent weird behavior'
+        calc_type: 'value'
+        value: 0

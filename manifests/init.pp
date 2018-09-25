@@ -62,26 +62,24 @@
 # Copyright 2016 Thomas Bendler
 #
 class sap (
-  Boolean $base = $sap::params::base,
-  Boolean $base_extended = $sap::params::base_extended,
-  Boolean $experimental = $sap::params::experimental,
-  Boolean $ads = $sap::params::ads,
-  Boolean $bo = $sap::params::bo,
-  Boolean $cloudconnector = $sap::params::cloudconnector,
-  Boolean $hana = $sap::params::hana,
-  Boolean $router = $sap::params::router,
+  Array[Enum['base', 'base_extended', 'experimental', 'ads', 'bo',
+  'cloudconnector', 'hana', 'router', 'db2']] $enabled_components = ['base'],
   Optional[String] $router_oss_realm  = undef,
   Optional[Array[String]] $router_rules = undef,
   Optional[String] $distro_text = undef
 ) inherits sap::params {
 
   # Fail if dependencies are not met
-  if (($ads != false) or ($bo != false) or ($hana !=false)) {
-    if ($base != true) {
-      fail('Dependency parameter $sap::base not set to true!')
-    }
-    if ($base_extended != true) {
-      fail('Dependency parameter $sap::base_extended not set to true!')
+  $base_enabled = 'base' in $enabled_components
+  $base_extended_enabled= 'base_extended' in $enabled_components
+  $sap::params::advanced_components.each | $component | {
+    if ($component in $enabled_components) {
+      unless($base_enabled) {
+        fail("Component '${component}' requires 'base'!")
+      }
+      unless($base_extended_enabled) {
+        fail("Component '${component}' requires 'base_extended'!")
+      }
     }
   }
 

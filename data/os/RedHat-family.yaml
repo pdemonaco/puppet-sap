@@ -1,8 +1,7 @@
 ---
-sap::params::package_uuidd: 'uuidd'
 # Common packages
 sap::params::packages_common:
-  - "%{lookup('sap::params::package_uuidd')}"
+  - 'uuidd'
   - '@large-systems'
   - '@compat-libraries'
   - '@network-file-system-client'

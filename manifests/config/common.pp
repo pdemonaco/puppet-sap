@@ -1,14 +1,6 @@
-# Class: sap::config::commmon
+# Overwrites the distro text file to trick SAP into thinking this is RHEL.
 #
-# This class contain the configuration for SAP Netweaver
-#
-# Parameters:   This module has no parameters
-#
-# Actions:      This module has no actions
-#
-# Requires:     This module has no requirements
-#
-# Sample Usage:
+# @summary Trick SAP into thinking this host is running a supported RHEL
 #
 class sap::config::common {
 

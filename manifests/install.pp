@@ -16,56 +16,61 @@ class sap::install {
     package_list  => $sap::params::packages_common,
   }
 
-  if $sap::base {
+  if 'base' in $sap::enabled_components {
     sap::install::package_set { 'base':
       package_list  => $sap::params::packages_base,
     }
   }
 
-  if $sap::base_extended {
+  if 'base_extended' in $sap::enabled_components {
     sap::install::package_set { 'base_extended':
       package_list  => $sap::params::packages_base_extended,
     }
   }
 
-  if $sap::ads {
+  if 'ads' in $sap::enabled_components {
     sap::install::package_set { 'ads':
       package_list  => $sap::params::packages_ads,
     }
   }
 
   # Attempt to install RHEL 7.x applications
-  if $sap::bo or $sap::cloudconnector or $sap::hana {
-    if $facts['os']['release']['major'] != '7' {
-      warning('HANA, Business Objects, and Cloud Connector are only supported on 7.x or greater, skipping!')
-    }
-
-    if $sap::bo {
-      sap::install::package_set { 'bo':
-        package_list  => $sap::params::packages_bo,
-      }
-    }
-
-    if $sap::cloudconnector {
-      sap::install::package_set { 'cloudconnector':
-        package_list  => $sap::params::packages_cloudconnector,
-      }
-    }
-
-    if $sap::hana {
-      sap::install::package_set { 'hana':
-        package_list  => $sap::params::packages_hana,
+  $sap::params::rhel7_components.each | $component | {
+    if $component in $sap::enabled_components {
+      if $facts['os']['release']['major'] != '7' {
+        warning("${component} is only supported on 7.x or greater!")
+      } else {
+        case $component {
+          'bo': {
+            sap::install::package_set { 'bo':
+              package_list  => $sap::params::packages_bo,
+            }
+          }
+          'cloudconnector': {
+            sap::install::package_set { 'cloudconnector':
+              package_list  => $sap::params::packages_cloudconnector,
+            }
+          }
+          'hana': {
+            sap::install::package_set { 'hana':
+              package_list  => $sap::params::packages_hana,
+            }
+          }
+          default: {
+            fail("Invalid component '${component} - this error should be impossible!")
+          }
+        }
       }
     }
   }
 
   # Experimental support
-  if $sap::experimental {
+  if 'experimental' in $sap::enabled_components {
     sap::install::package_set { 'experimental':
       package_list  => $sap::params::packages_experimental,
     }
 
-    if $sap::router {
+    if 'router' in $sap::enabled_components {
       sap::install::package_set { 'saprouter':
         package_list  => $sap::params::packages_saprouter,
       }
