@@ -1,0 +1,34 @@
+<%- |   Array[String] $header_comment,
+        Hash $entries
+| -%>
+# Managed by Puppet
+# Do not modify this file directly, changes will be overwritten!
+<% unless(empty($header_comment)) {
+  $header_comment.each | $comment_line | { -%>
+# <%= $comment_line %>
+<% } -%>
+<% } -%>
+<% $entries.each | $limit_domain, $data | { -%>
+<% if 'comment' in $data { -%>
+# <%= $limit_domain %>:
+<% $data['comment'].each | $comment_line | { -%>
+# <%= $comment_line %>
+<% }
+}
+
+# Iterate through the types defined for this domain
+$data.each | $limit_item, $data | {
+  $limit_type = $data['type']
+  $limit_value = $data['value']
+  
+  unless($limit_type in ['hard', 'soft', 'both']) {
+    fail("limit.d/conf: Invalid type ${type} for ${limit_domain}")
+  }
+  if $limit_type == 'both' or $limit_type == 'hard' { -%>
+<%= $limit_domain %>    hard    <%= $limit_item %>    <%= $limit_value %>
+<% }
+  if $limit_type == 'both' or $limit_type == 'soft' { -%>
+<%= $limit_domain %>    soft    <%= $limit_item %>    <%= $limit_value %>
+<% }
+  }
+} -%>

@@ -66,6 +66,7 @@ describe 'sap', type: :class do
 
       let(:params) do
         {
+          system_ids: [ 'EP0' ],
           enabled_components: [
             'base',
             'base_extended',
@@ -97,7 +98,7 @@ describe 'sap', type: :class do
       it { is_expected.to contain_sap__install__package_set('saprouter') }
       it { is_expected.to contain_class('sap::config') }
       it { is_expected.to contain_class('sap::config::common') }
-      it { is_expected.to contain_class('sap::config::base') }
+      it { is_expected.to contain_class('sap::config::limits') }
       it { is_expected.to contain_class('sap::config::sysctl') }
       it { is_expected.to contain_class('sap::config::router') }
       it { is_expected.to contain_class('sap::service') }
@@ -249,13 +250,7 @@ describe 'sap', type: :class do
           expect(content).to match(%r{\nkernel[.]sem = 1250 256000 100 8192\n})
           expect(content).to match(%r{\nvm[.]max_map_count = 2000000\n})
         end
-      end
-      it { is_expected.to contain_file('/etc/security/limits.d/00-sap.conf').with_ensure('file') }
-      it 'is expected to generate valid content for 00-sap.conf - generic part' do
-        content = catalogue.resource('file', '/etc/security/limits.d/00-sap.conf').send(:parameters)[:content]
-        expect(content).to match('@sapsys    hard    nofile    65537')
-        expect(content).to match('@dba       hard    nofile    65537')
-        expect(content).to match('\*          hard    nofile    65537')
+        it { is_expected.to contain_file('/etc/security/limits.d/00-sap-base.conf').with_ensure('file') }
       end
 
       # SAP router configuration
@@ -342,6 +337,7 @@ describe 'sap', type: :class do
 
       let(:params) do
         {
+          system_ids: [ 'EP0' ],
           enabled_components: [
             'db2',
           ],

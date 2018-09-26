@@ -19,7 +19,7 @@ class sap::config::sysctl {
       file { "${path}/${sequence}-sap-${component}.conf":
         ensure  => file,
         mode    => '0644',
-        content => epp($parameters['template'], $sysctl_arguments);
+        content => epp($parameters['template'], $sysctl_arguments),
       }
     }
   }

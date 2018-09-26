@@ -98,3 +98,43 @@ sap::params::config_limits:
   base:
     path: '/etc/security/limits.d'
     sequence: '00'
+    template: 'sap/etc/security/limits.d/conf.epp'
+    per_sid: false
+    header_comment:
+      - 'See the RHEL7 master note https://launchpad.support.sap.com/#/notes/2002167 for detail'
+      - 'Note that this may handle Oracle requirements as well'
+    entries:
+      '@sapsys':
+        nofile:
+          type: 'both'
+          value: 65536
+        nproc:
+          type: 'soft'
+          value: 'unlimited'
+      '@sdba':
+        nofile:
+          type: 'both'
+          value: 32800
+      '@dba':
+        nofile:
+          type: 'both'
+          value: 32800
+  db2:
+    path: '/etc/security/limits.d'
+    sequence: '00'
+    template: 'sap/etc/security/limits.d/conf.epp'
+    per_sid: true
+    header_comment:
+      - 'Limits parameters per IBM documentation for non-root users. Version 10.5'
+      - 'https://www.ibm.com/support/knowledgecenter/en/SSEPGG_10.5.0/com.ibm.db2.luw.qb.server.doc/doc/r0052441.html'
+    entries:
+      'db2_sid_adm':
+        data:
+          type: 'both'
+          value: 'unlimited'
+        nofile:
+          type: 'both'
+          value: '65536'
+        fsize:
+          type: 'both'
+          value: 'unlimited'

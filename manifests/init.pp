@@ -3,65 +3,45 @@
 #
 # @summary Installs prerequisites for an SAP environment on RedHat derivatives
 #
-# @param base
-#   Set to true when SAP ABAP, JAVA stack, SAP ADS or SAP BO is used
-#   Default value is false
+# @param system_ids [Array[Pattern[/^[A-Z0-9]{3}$/]]]
+#   An array of SAP system IDs (SIDs) which will be present on the target host.
+#   Note that each entry must be exactly 3 characters in length and contain
+#   exclusively uppercase characters.
 #
-# @param base_ext
-#   Set to true when SAP ADS or SAP BO is used
-#   Default value is false
+# @param enabled_components [Array[Enum]]
+#   List of components which will be present on the target system. Note that
+#   this is an enum which includes the following valid options:
+#   * `base`: SAP ABAP, JAVA stack, SAP ADS or SAP BO is used
+#   * `base_extended`: ADS, Business Objects, and HANA require this
+#   * `experimental`: needed for special features like SAP router
+#   * `ads`: Adobe Document Services has additional requirements
+#   * `bo`: Business Objects has other additional requirements
+#   * `cloudconnector`: SAP Cloud Connector
+#   * `router`: Configures the SAP router service on this machine
 #
-# @param experimental
-#   Set to true when experimental features should be used
-#   (i.e. SAP Router)
-#   Default value is false
-#
-# @param ads
-#   Set to true when Adobe Document Serverice is used
-#   Default value is false
-#
-# @param bo
-#   Set to true when SAP Business Objects is used
-#   Default value is false
-#
-# @param cloudconnector
-#   Set to true when SAP Cloud Connector is used
-#   Default value is false
-#
-# @param router
-#   Set to true when SAP Router is used
-#   Default value is false
-#
-# @param router_oss_realm
+# @param router_oss_realm [Optional[String]]
 #   Specify OSS realm for SAP router connection. For example,
 #   `'p:CN=hostname.domain.tld, OU=0123456789, OU=SAProuter, O=SAP, C=DE'`
-#   Default value is undef
 #
-# @param router_rules
+# @param router_rules [Optional[Array[String]]]
 #   Specify array of rules for the SAP router
-#   Default value is undef
 #
-# @param distro_text
-#   Modify text in /etc/redhat-release
-#   Default value is undef
+# @param distro_text [Optional[String]]
+#   Modify text in /etc/redhat-release 
 #
-# @example ADS Application server
-#
-#  class { '::sap':
-#    ads      => true,
-#    base     => true,
-#    base_ext => true
+# @example Application server containing an ADS instance and a Netweaver instance
+#  class { 'sap':
+#    system_ids         => ['AP0', 'AP1'],
+#    enabled_components => ['base', 'base_extended', 'ads'],
 #  }
 #
-# === Authors
-#
-# Author Thomas Bendler <project@bendler-net.de>
-#
-# === Copyright
+# @author Thomas Bendler <project@bendler-net.de>
+# @author Phil DeMonaco <pdemon@gmail.com>
 #
 # Copyright 2016 Thomas Bendler
 #
 class sap (
+  Array[Pattern[/^[A-Z0-9]{3}$/]] $system_ids = undef,
   Array[Enum['base', 'base_extended', 'experimental', 'ads', 'bo',
   'cloudconnector', 'hana', 'router', 'db2']] $enabled_components = ['base'],
   Optional[String] $router_oss_realm  = undef,

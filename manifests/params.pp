@@ -104,6 +104,30 @@ class sap::params (
       ]
     ]
   ] $config_sysctl = {},
+  Hash[
+    String,
+    Hash[
+      String,
+      Variant[
+        String,
+        Boolean,
+        Array[String],
+        Hash[
+          String,
+          Hash[
+            String,
+            Hash[
+              String,
+              Variant[
+                String,
+                Integer,
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]
+  ] $config_limits = {},
 ){
 
   # These components depend on 'base' and 'base_extendend'

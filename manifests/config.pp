@@ -1,24 +1,12 @@
-# Class: sap::config
+# Orchestrates the creation of relevant configuration files needed by SAP
 #
-# This class contain the configuration for SAP Netweaver
-#
-# Parameters:   This module has no parameters
-#
-# Actions:      This module has no actions
-#
-# Requires:     This module has no requirements
-#
-# Sample Usage: include sap::config
+# @summary Private class used to control configuration file deployment.
 #
 class sap::config {
 
   include sap::config::common
-
   include sap::config::sysctl
-
-  if 'base' in $sap::enabled_components {
-    include sap::config::base
-  }
+  include sap::config::limits
 
   if 'router' in $sap::enabled_components {
     include sap::config::router
