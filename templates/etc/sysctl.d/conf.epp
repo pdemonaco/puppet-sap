@@ -10,8 +10,9 @@
 } -%>
 <% $entries.each | $param, $data | { -%>
 <% if 'comment' in $data { -%>
+# <%= $param %>:
 <% $data['comment'].each | $comment_line | { -%>
-# <%= $param %>: <%= $comment_line %>
+# <%= $comment_line %>
 <% }
 } -%>
 <%= sap::sysctl_line($param, $data) %>
