@@ -337,7 +337,7 @@ describe 'sap', type: :class do
 
       let(:params) do
         {
-          system_ids: [ 'EP0' ],
+          system_ids: [ 'EP0', 'EP1' ],
           enabled_components: [
             'db2',
           ],
@@ -349,7 +349,7 @@ describe 'sap', type: :class do
       # Check the sysctl file
       it { is_expected.to contain_file('/etc/sysctl.d/00-sap-db2.conf') }
 
-      # Ensure the contents of the file match our expectations
+      # Ensure the contents of the sysctl file match our expectations
       it 'is expected to contain valid db2 sysctl entries in /etc/sysctl.d/00-sap-db2.conf' do
         content = catalogue.resource('file', '/etc/sysctl.d/00-sap-db2.conf').send(:parameters)[:content]
         expect(content).to match(%r{\nkernel[.]shmmni = 1890\n})
@@ -361,6 +361,25 @@ describe 'sap', type: :class do
         expect(content).to match(%r{\nkernel[.]msgmnb = 65536\n})
         expect(content).to match(%r{\nvm[.]swappiness = 0\n})
         expect(content).to match(%r{\nvm[.]overcommit_memory = 0\n})
+      end
+
+      # Ensure we have the filter file
+      it { is_expected.to contain_file('/etc/security/limits.d/00-sap-db2.conf') }
+
+      it 'is expected to contain valid sid specific limits for the database in /etc/security/limits.d/00-sap-db2.conf' do
+        content = catalogue.resource('file', '/etc/security/limits.d/00-sap-db2.conf').send(:parameters)[:content]
+        expect(content).to match(%r{\n@db2ep0adm    hard    data    unlimited\n})
+        expect(content).to match(%r{\n@db2ep0adm    soft    data    unlimited\n})
+        expect(content).to match(%r{\n@db2ep0adm    hard    nofile    65536\n})
+        expect(content).to match(%r{\n@db2ep0adm    soft    nofile    65536\n})
+        expect(content).to match(%r{\n@db2ep0adm    hard    fsize    unlimited\n})
+        expect(content).to match(%r{\n@db2ep0adm    soft    fsize    unlimited\n})
+        expect(content).to match(%r{\n@db2ep1adm    hard    data    unlimited\n})
+        expect(content).to match(%r{\n@db2ep1adm    soft    data    unlimited\n})
+        expect(content).to match(%r{\n@db2ep1adm    hard    nofile    65536\n})
+        expect(content).to match(%r{\n@db2ep1adm    soft    nofile    65536\n})
+        expect(content).to match(%r{\n@db2ep1adm    hard    fsize    unlimited\n})
+        expect(content).to match(%r{\n@db2ep1adm    soft    fsize    unlimited\n})
       end
     end
   end

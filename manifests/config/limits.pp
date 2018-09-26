@@ -15,28 +15,27 @@ class sap::config::limits {
       $header_comment = $parameters['header_comment']
       $entries = $parameters['entries']
 
-      # If this is an SID specific file create one per SID
+      # If this is an SID specific file we need to transform our input structure
+      # using the SID pattern
       if $parameters['per_sid'] {
         # Replace the SID pattern in the user/group name with the system SID
-        $per_sid_array = $sap::system_ids.map | $sid | {
-          $transformed_entries = $entries.map | $entry | {
-            $base_group = $entry[0]
-            $sid_group = regsubst($base_group, '_sid_', $sid, 'G')
+        # TODO - maybe only do this for keys which match the pattern?
+        $entries_transformed = $entries.map | $entry | {
+          $base_group = $entry[0]
+          $data = $entry[1]
+
+          # Create a new pair per entry
+          $per_sid_array = $sap::system_ids.map | $sid | {
+            $sid_group = regsubst($base_group, '_sid_', downcase($sid), 'G')
 
             # Return value for the mapping
-            $new_entry = [$sid_group, $entry[1]]
+            $new_entry = [$sid_group, $data]
           }
+        }
 
-          $limits_arguments = {
-            'header_comment' => $header_comment,
-            'entries'        => $transformed_entries,
-          }
-
-          file { "${path}/${sequence}-sap-${component}-${sid}.conf":
-            ensure  => file,
-            mode    => '0644',
-            content => epp($parameters['template'], $limits_arguments),
-          }
+        $limits_arguments = {
+          'header_comment' => $header_comment,
+          'entries'        => Hash.new(flatten($entries_transformed)),
         }
       } else {
         # Otherwise just create a normal file
@@ -44,12 +43,12 @@ class sap::config::limits {
           'header_comment' => $header_comment,
           'entries'        => $entries,
         }
+      }
 
-        file { "${path}/${sequence}-sap-${component}.conf":
-          ensure  => file,
-          mode    => '0644',
-          content => epp($parameters['template'], $limits_arguments),
-        }
+      file { "${path}/${sequence}-sap-${component}.conf":
+        ensure  => file,
+        mode    => '0644',
+        content => epp($parameters['template'], $limits_arguments),
       }
     }
     # Do nothing for components which aren't enabled
