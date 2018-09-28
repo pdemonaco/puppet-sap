@@ -19,7 +19,6 @@ sap::params::packages_base:
   - 'libaio-devel'
   - 'libstdc++'
   - 'libstdc++-devel'
-  - 'rar'
   - 'tcsh'
   - 'xorg-x11-utils'
 
