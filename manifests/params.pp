@@ -35,6 +35,9 @@
 #   Special SAP tools and utilities including sapcar and others... Appears to be
 #   custom built?
 #
+# @param config_redhat_release_conf [String]
+#   This should point to the path of the desired redhat release config file.
+#
 # @param service_uuidd [String]
 #   Name of the uuidd service. This is used to enable the daemon after the
 #   installation completes.
@@ -43,9 +46,48 @@
 #   SAP Cloud Connector service name used for enabling the service.
 #
 # @param service_saprouter [String]
+#   Name of the service corresponding to the SAP router process.
+#
+# @param config_saproutetab [String]
+#   File target for the sap router route-table should it be configure.
+#
+# @param config_saproutetab_template [String]
+#   Path within the module to the appropriate erb template to apply for the
+#   saproutetab.
+#
+# @param config_saprouter_sysconfig [String]
+#   Target /etc/sysconfig file for the saprouter service
 #   
-# @example Simple inclusion of this package.
-#   include sap::params
+# @param config_saprouter_sysconfig_template [String]
+#   Embedded ruby template to be applied to the sysconfig file
+#   
+# @param config_saprouter_sysconfig_template [String]
+#   Embedded ruby template to be applied to the sysconfig file
+#
+# @param config_sysctl [Hash]
+#   Similar to config_limits this provides a configurable set of directives to
+#   include in /etc/sysctl.d/ on a per component basis.
+#
+# @param config_limits [Hash]
+#   A deeply nested hash containing the target /etc/security/limits.d/
+#   entries for a given system. This is currently defined for baseline sap
+#   instances and db2. The hash has the following structure
+#   
+#   ```puppet
+#   'component-name' => {
+#     path           => '/etc/security/limits.d', # this should be left alone - limits directrory
+#     sequence       => '00', # string ID prepended to the limits file. e.g.
+#                             # /etc/security/limits.d/00-sap-base.conf
+#     per_sid        => true, # Indicates whether the domain has a _sid_
+#                             # substring that will need to be substituted with the actual system ID.
+#     header_comment => [ # An array of comment lines which will appear at the
+#                         #start of the file
+#       'Comment line 1',
+#       'Comment line 2',
+#     ],
+#     entries => { # Hash containing the actual 
+#     }
+#   ```
 #
 class sap::params (
   Array[String] $packages_common                        = [],
@@ -57,10 +99,6 @@ class sap::params (
   Array[String] $packages_cloudconnector                = [],
   Array[String] $packages_saprouter                     = [],
   Array[String] $packages_experimental                  = [],
-  String $config_sysctl_conf                            = undef,
-  String $config_sysctl_conf_template                   = undef,
-  String $config_limits_conf                            = undef,
-  String $config_limits_conf_template                   = undef,
   String $config_redhat_release_conf                    = undef,
   String $config_saproutetab                            = undef,
   String $config_saproutetab_template                   = undef,

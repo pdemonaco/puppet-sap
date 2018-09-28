@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe 'sap', type: :class do
   test_on = {
-    :hardwaremodels => ['x86_64', 'ppc64'],
-    :supported_os => [
+    hardwaremodels: ['x86_64', 'ppc64'],
+    supported_os: [
       {
         'operatingsystem' => 'RedHat',
         'operatingsystemrelease' => ['7'],
@@ -19,7 +19,7 @@ describe 'sap', type: :class do
       {
         'operatingsystem' => 'Scientific',
         'operatingsystemrelease' => ['6', '7'],
-      }
+      },
     ],
   }
 
@@ -27,46 +27,42 @@ describe 'sap', type: :class do
     context "on #{os}" do
       let(:facts) do
         facts.merge(
-          {
-            page_size: 4096,
-            memory: {
-              system: {
-                total_bytes: 7930249216,
-              },
-            }
-          }
+          page_size: 4096,
+          memory: {
+            system: {
+              total_bytes: 7_930_249_216,
+            },
+          },
         )
       end
-      
-      if facts[:operatingsystemmajrelease] == 7 
+
+      if facts[:operatingsystemmajrelease] == 7
         let(:facts) do
           facts.merge(
-            {
-              os: {
-                release: {
-                  major: '7'
-                }
-              }
-            }
+            os: {
+              release: {
+                major: '7',
+              },
+            },
           )
         end
+
       elsif facts[:operatingsystemmajrelease] == 6
         let(:facts) do
           facts.merge(
-            {
-              os: {
-                release: {
-                  major: '6'
-                }
-              }
-            }
+            os: {
+              release: {
+                major: '6',
+              },
+            },
           )
         end
+
       end
 
       let(:params) do
         {
-          system_ids: [ 'EP0' ],
+          system_ids: ['EP0'],
           enabled_components: [
             'base',
             'base_extended',
@@ -110,7 +106,7 @@ describe 'sap', type: :class do
         it { is_expected.to contain_sap__install__package_set('cloudconnector') }
         it { is_expected.to contain_sap__install__package_set('hana') }
       end
-      
+
       # Common packages
       it { is_expected.to contain_package('uuidd').with_ensure('installed') }
 
@@ -188,7 +184,7 @@ describe 'sap', type: :class do
       end
 
       # These packages are only supported on RHEL 7
-      if facts[:operatingsystemmajrelease] == '7' 
+      if facts[:operatingsystemmajrelease] == '7'
         # SAP BO packges
         it { is_expected.to contain_package('libXcursor').with_ensure('installed') }
         it { is_expected.to contain_package('libXext').with_ensure('installed') }
@@ -230,10 +226,7 @@ describe 'sap', type: :class do
         it { is_expected.to contain_package('xulrunner').with_ensure('installed') }
 
         # SAP cloudconnector service
-        it { is_expected.to contain_service('scc_daemon').with( 'ensure' => 'running', 'enable' => 'true') }
-      #else
-        # This should be working but it's not doing what we need   
-        #it { is_expected.to contain_warning('HANA, Business Objects, and Cloud Connector are only supported on 7.x or greater!') }
+        it { is_expected.to contain_service('scc_daemon').with('ensure' => 'running', 'enable' => 'true') }
       end
 
       # SAP router package
@@ -268,13 +261,13 @@ describe 'sap', type: :class do
       end
 
       # General UUID service
-      it { is_expected.to contain_service('uuidd').with( 'ensure' => 'running', 'enable' => 'true') }
-      
+      it { is_expected.to contain_service('uuidd').with('ensure' => 'running', 'enable' => 'true') }
+
       # SAP router service
-      it { is_expected.to contain_service('sap-router').with( 'ensure' => 'running', 'enable' => 'true') }
+      it { is_expected.to contain_service('sap-router').with('ensure' => 'running', 'enable' => 'true') }
 
       it { is_expected.to contain_file('/etc/redhat-release').with_ensure('file') }
-      it 'should generate valid content for redhat-release' do
+      it 'must generate valid content for redhat-release' do
         content = catalogue.resource('file', '/etc/redhat-release').send(:parameters)[:content]
         expect(content).to match('Best distribution ever build version 7.2')
       end
@@ -309,10 +302,10 @@ describe 'sap', type: :class do
       end
     end
   end
-  
+
   test_on = {
-    :hardwaremodels => ['x86_64', 'ppc64'],
-    :supported_os => [
+    hardwaremodels: ['x86_64', 'ppc64'],
+    supported_os: [
       {
         'operatingsystem' => 'RedHat',
         'operatingsystemrelease' => ['7'],
@@ -324,20 +317,18 @@ describe 'sap', type: :class do
     context "on #{os}" do
       let(:facts) do
         facts.merge(
-          {
-            page_size: 4_096,
-            memory: {
-              system: {
-                total_bytes: 7_930_249_216,
-              },
+          page_size: 4_096,
+          memory: {
+            system: {
+              total_bytes: 7_930_249_216,
             },
-          }
+          },
         )
       end
 
       let(:params) do
         {
-          system_ids: [ 'EP0', 'EP1' ],
+          system_ids: ['EP0', 'EP1'],
           enabled_components: [
             'db2',
           ],

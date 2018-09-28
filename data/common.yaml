@@ -18,16 +18,14 @@ lookup_options:
     merge: 'unique'
   sap::params::experimental:
     merge: 'unique'
-
-# Standard Netweaver Definitions
-sap::ads: false
-sap::base: false
-sap::base_extended: false
-sap::bo: false
-sap::cloudconnector: false
-sap::hana: false
-sap::router: false
+  sap::params::config_sysctl:
+    merge: 'deep'
+    knockout_prefix: '--'
+  sap::params::config_limits:
+    merge: 'deep'
+    knockout_prefix: '--'
+  sap::enabled_components:
+    merge: 'unique'
 
 # Additional settings
 sap::distro_text: 'original'
-sap::experimental: false

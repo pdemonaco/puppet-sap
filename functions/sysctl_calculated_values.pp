@@ -1,3 +1,21 @@
+# Converts the provided data hash into the corresponding value. This class
+# performs recursive calls to construct a single value when provided with a
+# compound series of values.
+#
+# @summary Recursive function used to compute the value for a sysctl var.
+#
+# @param data [Array[Hash]]
+#   Array of value hashes. The function will first attempt to call itself for
+#   the next entry in the array and then prepend it's own calculation to
+#   assemble the resulting string.
+#
+# @param index [Integer]
+#   Current position in the provided array. The function will call itself for
+#   index + 1 unless the current index is the last element in the array.
+#
+# @return [String]
+#   The value computed by the calculation process.
+#
 function sap::sysctl_calculated_values(
   Array[Hash] $data,
   Integer $index

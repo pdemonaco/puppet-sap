@@ -99,10 +99,6 @@ sap::params::packages_experimental:
   - 'sap-sapcar'
 
 # Config Definitions
-sap::params::config_sysctl_conf: '/etc/sysctl.conf'
-sap::params::config_sysctl_conf_template: 'sap/etc/sysctl.conf.erb'
-sap::params::config_limits_conf: '/etc/security/limits.d/00-sap.conf'
-sap::params::config_limits_conf_template: 'sap/etc/security/limits.d/00-sap.conf.erb'
 sap::params::config_redhat_release_conf: '/etc/redhat-release'
 
 # SAP Router Configurations

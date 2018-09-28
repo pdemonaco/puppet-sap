@@ -26,9 +26,9 @@ specific SAP products on this node.
 ## Module Description
 
 This module takes care that the SAP recommendations for installing specific SAP
-products on the Linux operating system are fullfilled on the current node. The
+products on the Linux operating system are fulfilled on the current node. The
 configuration is based on the corresponding SAP OSS notes describing the necessary
-configuration steps.
+steps.
 
 **Keep in mind, this module is _not_ related in any way to official SAP software
 distribution nor is it supported in any way by official SAP contracts. This is
@@ -46,15 +46,18 @@ puppetized way, so absolutely no warranty at all!**
 
 ### Beginning with sap
 
-Include '::sap' is enough to get you up and running if the parameters point to
-proper values. Keep mind that all parameters point default to false, so using the
-module without parameters will not change much. If you wish to pass in parameters
-like which SAP software product will be installed on the node you should use
-something like this:
+There are two mandatory parameters for the environment:
+* `enabled_components` - An array of target components that are enabled on this host. 
+* `system_ids` - An array of the SIDs which will be present on this machine
+
+The following declaration will enable baseline packages for an SAP instance named 'PR0':
 
 ```puppet
-class { '::sap':
-  cloudconnector => true,
+class { 'sap':
+  system_ids         => ['PR0'],
+  enabled_components => [
+    'base',
+  ],
 }
 ```
 
@@ -62,40 +65,59 @@ Alternatively these values can also be set in hiera:
 
 ```yaml
 ---
-sap::cloudconnector: true
+sap::system_ids:
+  - 'PR0'
+
+sap::enabled_components
+  - 'base'
 ```
 
 ## Usage
 
-All interaction with the sap module can do be done through the main sap class.
+All interaction with the sap module should be done through the main sap class.
 This means you can simply toggle the options in the sap class to get at the full
 functionality.
 
-### I just want sap, what's the minimum I need?
+### I just want sap, what's the minimum I need
 
-This won't actually do anything! 
+Declare your SID(s) and the 'base' component in hiera:
+
+```yaml
+sap::system_ids
+  - 'PR0'
+
+sap::enabled_components
+  - 'base'
+```
+
+Within your manifest include the SAP profile.
 
 ```puppet
-include '::sap'
+include 'sap'
 ```
 
 ### I just want ABAP stack, JAVA stack and ADS on target node.
 
+This example configures the total pre-requisite stack for ADS.
+
 ```puppet
 class { '::sap':
-  base          => true,
-  base_extended => true,
-  ads           => true,
+  system_ids         => ['AP0'],
+  enabled_components => [
+    'base',
+    'base_extended',
+    'ads'
+  ]
 }
 ```
 
 ## Limitations
 
-This module has been built on and tested against Puppet 4.0 and higher.
+This module has been built on and tested against Puppet 5.5 and higher.
 
 The module has been tested on:
 
-* RedHat Enterprise Linux 6/7
+* RedHat Enterprise Linux 7
 
 but should work on:
 
