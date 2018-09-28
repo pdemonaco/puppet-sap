@@ -1,30 +1,15 @@
 ---
 # Primarily adds the 32 bit versions of various 64 bit required packages. 
 sap::params::packages_base_extended:
-  - 'expat.i686'
   - 'glibc.i686'
+  - 'glibc-devel.i686'
   - 'libgcc.i686'
   - 'libX11.i686'
   - 'libXau.i686'
   - 'libxcb.i686'
-  - 'krb5-libs.i686'
 
 sap::params::packages_ads:
-  - 'cyrus-sasl-lib.i686'
-  - 'fontconfig.i686'
-  - 'freetype.i686'
-  - 'keyutils-libs.i686'
-  - 'libcom_err.i686'
-  - 'libidn.i686'
-  - 'libidn-devel.i686'
-  - 'libselinux.i686'
-  - 'nspr.i686'
-  - 'nss.i686'
-  - 'nss-softokn.i686'
   - 'nss-softokn-freebl.i686'
-  - 'nss-util.i686'
-  - 'openldap.i686'
-  - 'zlib.i686'
 
 sap::params::packages_bo:
   - 'compat-libstdc++-33.i686'
