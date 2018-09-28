@@ -23,7 +23,6 @@ sap::params::packages_ads:
   - 'nss-softokn.i686'
   - 'nss-softokn-freebl.i686'
   - 'nss-util.i686'
-  - 'openldaopenldapp.i686'
   - 'openldap.i686'
   - 'zlib.i686'
 

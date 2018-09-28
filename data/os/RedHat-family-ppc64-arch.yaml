@@ -23,7 +23,6 @@ sap::params::packages_ads:
   - 'nss-softokn.ppc'
   - 'nss-softokn-freebl.ppc'
   - 'nss-util.ppc'
-  - 'openldaopenldapp.ppc'
   - 'openldap.ppc'
   - 'zlib.ppc'
 
