@@ -4,11 +4,11 @@
 #
 class sap::config {
 
-  include sap::config::common
-  include sap::config::sysctl
-  include sap::config::limits
+  contain sap::config::common
+  contain sap::config::sysctl
+  contain sap::config::limits
 
   if 'router' in $sap::enabled_components {
-    include sap::config::router
+    contain sap::config::router
   }
 }

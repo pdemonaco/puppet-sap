@@ -132,8 +132,8 @@ describe 'sap', type: :class do
       it { is_expected.to contain_package('libxcb').with_ensure('installed') }
       it { is_expected.to contain_package('krb5-libs').with_ensure('installed') }
       if facts[:architecture] == 'x86_64'
-        it { is_expected.to contain_package('expat.i686').with_ensure('installed') }
         it { is_expected.to contain_package('glibc.i686').with_ensure('installed') }
+        it { is_expected.to contain_package('glibc-devel.i686').with_ensure('installed') }
         it { is_expected.to contain_package('libgcc.i686').with_ensure('installed') }
         it { is_expected.to contain_package('libX11.i686').with_ensure('installed') }
         it { is_expected.to contain_package('libXau.i686').with_ensure('installed') }
@@ -165,22 +165,7 @@ describe 'sap', type: :class do
       it { is_expected.to contain_package('openldap').with_ensure('installed') }
       it { is_expected.to contain_package('zlib').with_ensure('installed') }
       if facts[:architecture] == 'x86_64'
-        it { is_expected.to contain_package('cyrus-sasl-lib.i686').with_ensure('installed') }
-        it { is_expected.to contain_package('fontconfig.i686').with_ensure('installed') }
-        it { is_expected.to contain_package('freetype.i686').with_ensure('installed') }
-        it { is_expected.to contain_package('keyutils-libs.i686').with_ensure('installed') }
-        it { is_expected.to contain_package('krb5-libs.i686').with_ensure('installed') }
-        it { is_expected.to contain_package('libcom_err.i686').with_ensure('installed') }
-        it { is_expected.to contain_package('libidn.i686').with_ensure('installed') }
-        it { is_expected.to contain_package('libidn-devel.i686').with_ensure('installed') }
-        it { is_expected.to contain_package('libselinux.i686').with_ensure('installed') }
-        it { is_expected.to contain_package('nspr.i686').with_ensure('installed') }
-        it { is_expected.to contain_package('nss.i686').with_ensure('installed') }
-        it { is_expected.to contain_package('nss-softokn.i686').with_ensure('installed') }
         it { is_expected.to contain_package('nss-softokn-freebl.i686').with_ensure('installed') }
-        it { is_expected.to contain_package('nss-util.i686').with_ensure('installed') }
-        it { is_expected.to contain_package('openldap.i686').with_ensure('installed') }
-        it { is_expected.to contain_package('zlib.i686').with_ensure('installed') }
       end
 
       # These packages are only supported on RHEL 7

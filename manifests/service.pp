@@ -20,10 +20,10 @@ class sap::service {
 
   if 'cloudconnector' in $sap::enabled_components and
     $facts['os']['release']['major'] == '7' {
-    include sap::service::cloudconnector
+    contain sap::service::cloudconnector
   }
 
   if 'router' in $sap::enabled_components {
-    include sap::service::router
+    contain sap::service::router
   }
 }
