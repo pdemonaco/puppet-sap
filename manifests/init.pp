@@ -70,9 +70,9 @@ class sap (
     contain sap::config
     contain sap::service
 
-    Class['::sap::install']
-    -> Class['::sap::config']
-    ~> Class['::sap::service']
+    Class['sap::install']
+    -> Class['sap::config']
+    ~> Class['sap::service']
   } else {
     warning('The current operating system is not supported!')
   }
