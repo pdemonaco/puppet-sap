@@ -26,6 +26,3 @@ lookup_options:
     knockout_prefix: '--'
   sap::enabled_components:
     merge: 'unique'
-
-# Additional settings
-sap::distro_text: 'original'
