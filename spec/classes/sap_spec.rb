@@ -219,8 +219,18 @@ describe 'sap', type: :class do
 
       # SAP Linux configuration
       if facts[:operatingsystemmajrelease] == '7'
-        # Test the content of the sap config file
-        it { is_expected.to contain_file('/etc/sysctl.d/00-sap-base.conf').with_ensure('file') }
+        # Test that the sap config file is created & the refresh is defined
+        it {
+          is_expected.to contain_file('/etc/sysctl.d/00-sap-base.conf').with(
+            ensure: 'file',
+            notify: 'Exec[sysctl-reload]',
+          )
+
+          is_expected.to contain_exec('/sbin/sysctl --system').with(
+            refreshonly: true,
+            alias: 'sysctl-reload',
+          )
+        }
 
         # Ensure the contents of the file match our expectations
         it 'is expected to contain valid SAP sysctl entries in /etc/sysctl.d/00-sap-base.conf' do
@@ -228,7 +238,20 @@ describe 'sap', type: :class do
           expect(content).to match(%r{\nkernel[.]sem = 1250 256000 100 8192\n})
           expect(content).to match(%r{\nvm[.]max_map_count = 2000000\n})
         end
+
+        # Ensure limits is configured
         it { is_expected.to contain_file('/etc/security/limits.d/00-sap-base.conf').with_ensure('file') }
+
+        it 'is expected to contain valid limits for the core applicaiton in /etc/security/limits.d/00-sap-base.conf' do
+          content = catalogue.resource('file', '/etc/security/limits.d/00-sap-base.conf').send(:parameters)[:content]
+          expect(content).to match(%r{\n@sapsys    hard    nofile    65536\n})
+          expect(content).to match(%r{\n@sapsys    soft    nofile    65536\n})
+          expect(content).to match(%r{\n@sapsys    soft    nproc    unlimited\n})
+          expect(content).to match(%r{\n@sdba    hard    nofile    32800\n})
+          expect(content).to match(%r{\n@sdba    soft    nofile    32800\n})
+          expect(content).to match(%r{\n@dba    hard    nofile    32800\n})
+          expect(content).to match(%r{\n@dba    soft    nofile    32800\n})
+        end
       end
 
       # SAP router configuration

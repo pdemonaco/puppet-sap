@@ -20,7 +20,14 @@ class sap::config::sysctl {
         ensure  => file,
         mode    => '0644',
         content => epp($parameters['template'], $sysctl_arguments),
+        notify  => Exec['sysctl-reload'],
       }
     }
+  }
+
+  # Refresh sysctl parameters
+  exec { '/sbin/sysctl --system':
+    refreshonly => true,
+    alias       => 'sysctl-reload',
   }
 }
