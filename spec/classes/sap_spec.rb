@@ -304,6 +304,9 @@ describe 'sap', type: :class do
         )
       }
 
+      # Check for notify about swap space being too small
+      it { is_expected.to contain_notify('SAP: Swap space may be undersized! Current 4 GiB, Target 16 GiB') }
+
       case facts[:operatingsystem]
       when 'RedHat'
         case facts[:operatingsystemmajrelease]
