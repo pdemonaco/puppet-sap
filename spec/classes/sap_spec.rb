@@ -32,6 +32,14 @@ describe 'sap', type: :class do
             system: {
               total_bytes: 7_930_249_216,
             },
+            swap: {
+              total_bytes: 4_294_901_760,
+            },
+          },
+          mountpoints: {
+            '/dev/shm' => {
+              size_bytes: 3_961_782_272,
+            },
           },
         )
       end
@@ -96,6 +104,7 @@ describe 'sap', type: :class do
       it { is_expected.to contain_class('sap::config::common') }
       it { is_expected.to contain_class('sap::config::limits') }
       it { is_expected.to contain_class('sap::config::sysctl') }
+      it { is_expected.to contain_class('sap::config::tmpfs') }
       it { is_expected.to contain_class('sap::config::router') }
       it { is_expected.to contain_class('sap::service') }
       it { is_expected.to contain_class('sap::service::router') }
@@ -219,7 +228,7 @@ describe 'sap', type: :class do
 
       # SAP Linux configuration
       if facts[:operatingsystemmajrelease] == '7'
-        # Test that the sap config file is created & the refresh is defined
+        # Test that the sap sysctl config file is created & the refresh is defined
         it {
           is_expected.to contain_file('/etc/sysctl.d/00-sap-base.conf').with(
             ensure: 'file',
@@ -279,6 +288,21 @@ describe 'sap', type: :class do
         content = catalogue.resource('file', '/etc/redhat-release').send(:parameters)[:content]
         expect(content).to match('Best distribution ever build version 7.2')
       end
+
+      # Ensure tmpfs configuration is correct
+      it {
+        is_expected.to contain_file_line('fstab_tmpfs_size').with(
+          ensure: 'present',
+          path: '/etc/fstab',
+          line: "tmpfs\t/dev/shm\ttmpfs\tsize=9g\t0 0",
+        )
+
+        is_expected.to contain_exec('remount_devshm').with(
+          command: '/bin/mount -o remount /dev/shm',
+          subscribe: 'File_line[fstab_tmpfs_size]',
+          refreshonly: true,
+        )
+      }
 
       case facts[:operatingsystem]
       when 'RedHat'

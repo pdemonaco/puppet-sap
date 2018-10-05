@@ -10,4 +10,8 @@ class sap::config {
   if 'router' in $sap::enabled_components {
     contain sap::config::router
   }
+
+  if 'base' in $sap::enabled_components {
+    contain sap::config::tmpfs
+  }
 }
