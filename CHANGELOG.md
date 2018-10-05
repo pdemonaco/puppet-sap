@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 * Refactor to support other architectures, ppc64 in particular
 * Addition of dynamically calculated limits and sysctl entries
 * Updated to match the latest RHEL 7 guidelines from SAP
-* Added warning check for swap partition size
+* Added notify check for swap partition size
 * Added validation and update of /dev/shm size
 
 ## Release 0.9.1
