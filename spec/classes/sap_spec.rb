@@ -24,7 +24,38 @@ describe 'sap', type: :class do
   }
 
   on_supported_os(test_on).each do |os, facts|
-    context "on #{os}" do
+    context "on #{os} missing SID" do
+      let(:facts) do
+        facts.merge(
+          page_size: 4096,
+          memory: {
+            system: {
+              total_bytes: 7_930_249_216,
+            },
+            swap: {
+              total_bytes: 4_294_901_760,
+            },
+          },
+          mountpoints: {
+            '/dev/shm' => {
+              size_bytes: 3_961_782_272,
+            },
+          },
+        )
+      end
+
+      let(:params) do
+        {
+          enabled_components: [
+            'base',
+          ],
+        }
+      end
+
+      it { is_expected.to compile.with_all_deps.and_raise_error(%r{At least one SID must be specified!}) }
+    end
+
+    context "on #{os} full config" do
       let(:facts) do
         facts.merge(
           page_size: 4096,
@@ -349,7 +380,7 @@ describe 'sap', type: :class do
   }
 
   on_supported_os(test_on).each do |os, facts|
-    context "on #{os}" do
+    context "on #{os} db2 validation" do
       let(:facts) do
         facts.merge(
           page_size: 4_096,

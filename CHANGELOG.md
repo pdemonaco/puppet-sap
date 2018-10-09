@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 * Updated to match the latest RHEL 7 guidelines from SAP
 * Added notify check for swap partition size
 * Added validation and update of /dev/shm size
+* Added test to ensure an SID is specified
 
 ## Release 0.9.1
 * Some changes ?

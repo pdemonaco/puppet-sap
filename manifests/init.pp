@@ -41,7 +41,7 @@
 # Copyright 2016 Thomas Bendler
 #
 class sap (
-  Array[Pattern[/^[A-Z0-9]{3}$/]] $system_ids = undef,
+  Array[Pattern[/^[A-Z0-9]{3}$/]] $system_ids = [],
   Array[Enum['base', 'base_extended', 'experimental', 'ads', 'bo',
   'cloudconnector', 'hana', 'router', 'db2']] $enabled_components = ['base'],
   Optional[String] $router_oss_realm  = undef,
@@ -61,6 +61,11 @@ class sap (
         fail("Component '${component}' requires 'base_extended'!")
       }
     }
+  }
+
+  # Ensure an SID was specified
+  if empty($system_ids) {
+    fail('At least one SID must be specified!')
   }
 
   # Start workflow
