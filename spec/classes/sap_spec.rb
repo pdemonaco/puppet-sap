@@ -425,18 +425,18 @@ describe 'sap', type: :class do
 
       it 'is expected to contain valid sid specific limits for the database in /etc/security/limits.d/00-sap-db2.conf' do
         content = catalogue.resource('file', '/etc/security/limits.d/00-sap-db2.conf').send(:parameters)[:content]
-        expect(content).to match(%r{\n@db2ep0adm    hard    data    unlimited\n})
-        expect(content).to match(%r{\n@db2ep0adm    soft    data    unlimited\n})
-        expect(content).to match(%r{\n@db2ep0adm    hard    nofile    65536\n})
-        expect(content).to match(%r{\n@db2ep0adm    soft    nofile    65536\n})
-        expect(content).to match(%r{\n@db2ep0adm    hard    fsize    unlimited\n})
-        expect(content).to match(%r{\n@db2ep0adm    soft    fsize    unlimited\n})
-        expect(content).to match(%r{\n@db2ep1adm    hard    data    unlimited\n})
-        expect(content).to match(%r{\n@db2ep1adm    soft    data    unlimited\n})
-        expect(content).to match(%r{\n@db2ep1adm    hard    nofile    65536\n})
-        expect(content).to match(%r{\n@db2ep1adm    soft    nofile    65536\n})
-        expect(content).to match(%r{\n@db2ep1adm    hard    fsize    unlimited\n})
-        expect(content).to match(%r{\n@db2ep1adm    soft    fsize    unlimited\n})
+        expect(content).to match(%r{\n@dbep0adm    hard    data    unlimited\n})
+        expect(content).to match(%r{\n@dbep0adm    soft    data    unlimited\n})
+        expect(content).to match(%r{\n@dbep0adm    hard    nofile    65536\n})
+        expect(content).to match(%r{\n@dbep0adm    soft    nofile    65536\n})
+        expect(content).to match(%r{\n@dbep0adm    hard    fsize    unlimited\n})
+        expect(content).to match(%r{\n@dbep0adm    soft    fsize    unlimited\n})
+        expect(content).to match(%r{\n@dbep1adm    hard    data    unlimited\n})
+        expect(content).to match(%r{\n@dbep1adm    soft    data    unlimited\n})
+        expect(content).to match(%r{\n@dbep1adm    hard    nofile    65536\n})
+        expect(content).to match(%r{\n@dbep1adm    soft    nofile    65536\n})
+        expect(content).to match(%r{\n@dbep1adm    hard    fsize    unlimited\n})
+        expect(content).to match(%r{\n@dbep1adm    soft    fsize    unlimited\n})
       end
     end
   end
