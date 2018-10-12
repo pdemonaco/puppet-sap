@@ -380,7 +380,7 @@ describe 'sap', type: :class do
   }
 
   on_supported_os(test_on).each do |os, facts|
-    context "on #{os} db2 validation" do
+    context "on #{os} db2 without mountpoints" do
       let(:facts) do
         facts.merge(
           page_size: 4_096,
@@ -398,6 +398,7 @@ describe 'sap', type: :class do
           enabled_components: [
             'db2',
           ],
+          create_mount_points: false,
         }
       end
 
@@ -438,6 +439,343 @@ describe 'sap', type: :class do
         expect(content).to match(%r{\n@dbep1adm    hard    fsize    unlimited\n})
         expect(content).to match(%r{\n@dbep1adm    soft    fsize    unlimited\n})
       end
+    end
+    
+    context "on #{os} db2 missing directory counts" do
+      let(:facts) do
+        facts.merge(
+          page_size: 4_096,
+          memory: {
+            system: {
+              total_bytes: 7_930_249_216,
+            },
+          },
+        )
+      end
+
+      let(:params) do
+        {
+          system_ids: ['EP0'],
+          enabled_components: [
+            'db2',
+          ],
+          create_mount_points: true,
+        }
+      end
+
+      it { is_expected.to compile.with_all_deps.and_raise_error(%r{missing entry in 'database_dir_counts'!}) }
+    end
+
+    context "on #{os} db2 missing data directory counts" do
+      let(:facts) do
+        facts.merge(
+          page_size: 4_096,
+          memory: {
+            system: {
+              total_bytes: 7_930_249_216,
+            },
+          },
+        )
+      end
+
+      let(:params) do
+        {
+          system_ids: ['EP0'],
+          enabled_components: [
+            'db2',
+          ],
+          database_dir_counts: {
+            EP0: {
+              temp: 4,
+            },
+          },
+          create_mount_points: true,
+        }
+      end
+
+      it { is_expected.to compile.with_all_deps.and_raise_error(%r{requires 'data' and 'temp' counts to be specified!}) }
+    end
+
+    context "on #{os} db2 missing temp directory counts" do
+      let(:facts) do
+        facts.merge(
+          page_size: 4_096,
+          memory: {
+            system: {
+              total_bytes: 7_930_249_216,
+            },
+          },
+        )
+      end
+
+      let(:params) do
+        {
+          system_ids: ['EP0'],
+          enabled_components: [
+            'db2',
+          ],
+          database_dir_counts: {
+            EP0: {
+              data: 4,
+            },
+          },
+          create_mount_points: true,
+        }
+      end
+
+      it { is_expected.to compile.with_all_deps.and_raise_error(%r{requires 'data' and 'temp' counts to be specified!}) }
+    end
+
+    context "on #{os} db2 requires at least 1 data volume" do
+      let(:facts) do
+        facts.merge(
+          page_size: 4_096,
+          memory: {
+            system: {
+              total_bytes: 7_930_249_216,
+            },
+          },
+        )
+      end
+
+      let(:params) do
+        {
+          system_ids: ['EP0'],
+          enabled_components: [
+            'db2',
+          ],
+          database_dir_counts: {
+            EP0: {
+              data: 0,
+              temp: 4,
+            },
+          },
+          create_mount_points: true,
+        }
+      end
+
+      it { is_expected.to compile.with_all_deps.and_raise_error(%r{there must be at least 1 data directory!}) }
+    end
+
+    context "on #{os} db2 valid directories" do
+      let(:facts) do
+        facts.merge(
+          page_size: 4_096,
+          memory: {
+            system: {
+              total_bytes: 7_930_249_216,
+            },
+          },
+        )
+      end
+
+      let(:params) do
+        {
+          system_ids: ['EP0', 'EP1'],
+          enabled_components: [
+            'db2',
+          ],
+          database_dir_counts: {
+            EP0: {
+              data: 4,
+              temp: 4,
+            },
+            EP1: {
+              data: 4,
+              temp: 0,
+            }
+          },
+          create_mount_points: true,
+        }
+      end
+
+      # Ensure the common directories exist
+      it {
+        is_expected.to contain_file('/sapmnt').with(
+          ensure: 'directory',
+          owner: 'root',
+          group: 'sapsys',
+          mode: '0755',
+        )
+
+        is_expected.to contain_file('/sapmnt/EP0').with(
+          ensure: 'directory',
+          owner: 'ep0adm',
+          group: 'sapsys',
+          mode: '0755',
+        ).that_requires('File[/sapmnt]')
+
+        is_expected.to contain_file('/sapmnt/EP1').with(
+          ensure: 'directory',
+          owner: 'ep1adm',
+          group: 'sapsys',
+          mode: '0755',
+        ).that_requires('File[/sapmnt]')
+      }
+
+      # Ensure the DB2 directories are created for both EP0 and EP1
+      it {
+        # Base db2
+        is_expected.to contain_file('/db2').with(
+          ensure: 'directory',
+          owner: 'root',
+          group: 'root',
+          mode: '0755',
+        )
+
+        # Home directories
+        is_expected.to contain_file('/db2/db2ep0').with(
+          ensure: 'directory',
+          owner: 'db2ep0',
+          group: 'dbep0adm',
+          mode: '0755',
+        ).that_requires('File[/db2]')
+        is_expected.to contain_file('/db2/db2ep1').with(
+          ensure: 'directory',
+          owner: 'db2ep1',
+          group: 'dbep1adm',
+          mode: '0755',
+        ).that_requires('File[/db2]')
+
+        # SID directory
+        is_expected.to contain_file('/db2/EP0').with(
+          ensure: 'directory',
+          owner: 'db2ep0',
+          group: 'dbep0adm',
+          mode: '0755',
+        ).that_requires('File[/db2]')
+        is_expected.to contain_file('/db2/EP1').with(
+          ensure: 'directory',
+          owner: 'db2ep1',
+          group: 'dbep1adm',
+          mode: '0755',
+        ).that_requires('File[/db2]')
+
+        # log directory
+        is_expected.to contain_file('/db2/EP0/log_dir').with(
+          ensure: 'directory',
+          owner: 'db2ep0',
+          group: 'dbep0adm',
+          mode: '0755',
+        ).that_requires('File[/db2/EP0]')
+        is_expected.to contain_file('/db2/EP1/log_dir').with(
+          ensure: 'directory',
+          owner: 'db2ep1',
+          group: 'dbep1adm',
+          mode: '0755',
+        ).that_requires('File[/db2/EP1]')
+
+        # log archive directory
+        is_expected.to contain_file('/db2/EP0/log_archive').with(
+          ensure: 'directory',
+          owner: 'db2ep0',
+          group: 'dbep0adm',
+          mode: '0755',
+        ).that_requires('File[/db2/EP0]')
+        is_expected.to contain_file('/db2/EP1/log_archive').with(
+          ensure: 'directory',
+          owner: 'db2ep1',
+          group: 'dbep1adm',
+          mode: '0755',
+        ).that_requires('File[/db2/EP1]')
+
+        # Dump Directory
+        is_expected.to contain_file('/db2/EP0/db2dump').with(
+          ensure: 'directory',
+          owner: 'db2ep0',
+          group: 'dbep0adm',
+          mode: '0755',
+        ).that_requires('File[/db2/EP0]')
+        is_expected.to contain_file('/db2/EP1/db2dump').with(
+          ensure: 'directory',
+          owner: 'db2ep1',
+          group: 'dbep1adm',
+          mode: '0755',
+        ).that_requires('File[/db2/EP1]')
+
+        # Data Directories
+        is_expected.to contain_file('/db2/EP0/sapdata1').with(
+          ensure: 'directory',
+          owner: 'db2ep0',
+          group: 'dbep0adm',
+          mode: '0750',
+        ).that_requires('File[/db2/EP0]')
+        is_expected.to contain_file('/db2/EP1/sapdata1').with(
+          ensure: 'directory',
+          owner: 'db2ep1',
+          group: 'dbep1adm',
+          mode: '0750',
+        ).that_requires('File[/db2/EP1]')
+
+        is_expected.to contain_file('/db2/EP0/sapdata2').with(
+          ensure: 'directory',
+          owner: 'db2ep0',
+          group: 'dbep0adm',
+          mode: '0750',
+        ).that_requires('File[/db2/EP0]')
+        is_expected.to contain_file('/db2/EP1/sapdata2').with(
+          ensure: 'directory',
+          owner: 'db2ep1',
+          group: 'dbep1adm',
+          mode: '0750',
+        ).that_requires('File[/db2/EP1]')
+
+        is_expected.to contain_file('/db2/EP0/sapdata3').with(
+          ensure: 'directory',
+          owner: 'db2ep0',
+          group: 'dbep0adm',
+          mode: '0750',
+        ).that_requires('File[/db2/EP0]')
+        is_expected.to contain_file('/db2/EP1/sapdata3').with(
+          ensure: 'directory',
+          owner: 'db2ep1',
+          group: 'dbep1adm',
+          mode: '0750',
+        ).that_requires('File[/db2/EP1]')
+
+        is_expected.to contain_file('/db2/EP0/sapdata4').with(
+          ensure: 'directory',
+          owner: 'db2ep0',
+          group: 'dbep0adm',
+          mode: '0750',
+        ).that_requires('File[/db2/EP0]')
+        is_expected.to contain_file('/db2/EP1/sapdata4').with(
+          ensure: 'directory',
+          owner: 'db2ep1',
+          group: 'dbep1adm',
+          mode: '0750',
+        ).that_requires('File[/db2/EP1]')
+
+        # Temp Directories
+        is_expected.to contain_file('/db2/EP0/saptmp1').with(
+          ensure: 'directory',
+          owner: 'db2ep0',
+          group: 'dbep0adm',
+          mode: '0750',
+        ).that_requires('File[/db2/EP0]')
+        is_expected.not_to contain_file('/db2/EP1/saptmp1')
+        is_expected.to contain_file('/db2/EP0/saptmp2').with(
+          ensure: 'directory',
+          owner: 'db2ep0',
+          group: 'dbep0adm',
+          mode: '0750',
+        ).that_requires('File[/db2/EP0]')
+        is_expected.not_to contain_file('/db2/EP1/saptmp2')
+        is_expected.to contain_file('/db2/EP0/saptmp3').with(
+          ensure: 'directory',
+          owner: 'db2ep0',
+          group: 'dbep0adm',
+          mode: '0750',
+        ).that_requires('File[/db2/EP0]')
+        is_expected.not_to contain_file('/db2/EP1/saptmp3')
+        is_expected.to contain_file('/db2/EP0/saptmp4').with(
+          ensure: 'directory',
+          owner: 'db2ep0',
+          group: 'dbep0adm',
+          mode: '0750',
+        ).that_requires('File[/db2/EP0]')
+        is_expected.not_to contain_file('/db2/EP1/saptmp4')
+      }
     end
   end
 end
