@@ -24,6 +24,33 @@ describe 'sap', type: :class do
   }
 
   on_supported_os(test_on).each do |os, facts|
+    context "on #{os} ads requires base" do
+      let(:facts) { facts }
+      let(:params) do
+        {
+          enabled_components: [
+            'ads',
+          ],
+        }
+      end
+
+      it { is_expected.to compile.with_all_deps.and_raise_error(%r{Component 'ads' requires 'base'!}) }
+    end
+
+    context "on #{os} ads requires base_extended" do
+      let(:facts) { facts }
+      let(:params) do
+        {
+          enabled_components: [
+            'ads',
+            'base',
+          ],
+        }
+      end
+
+      it { is_expected.to compile.with_all_deps.and_raise_error(%r{Component 'ads' requires 'base_extended'!}) }
+    end
+
     context "on #{os} missing SID" do
       let(:facts) do
         facts.merge(
@@ -367,6 +394,97 @@ describe 'sap', type: :class do
         it { is_expected.to contain_warning('The current operating system is not supported!') }
       end
     end
+
+    context "on #{os} base mountpoints" do
+      let(:facts) do
+        facts.merge(
+          page_size: 4096,
+          memory: {
+            system: {
+              total_bytes: 7_930_249_216,
+            },
+            swap: {
+              total_bytes: 4_294_901_760,
+            },
+          },
+          mountpoints: {
+            '/dev/shm' => {
+              size_bytes: 3_961_782_272,
+            },
+          },
+        )
+      end
+      let(:params) do
+        {
+          enabled_components: [
+            'base',
+          ],
+          system_ids: [
+            'EP0',
+            'WP0',
+          ],
+          create_mount_points: true,
+        }
+      end
+
+      # Ensure the common directories exist
+      it {
+        is_expected.to contain_file('/sapmnt').with(
+          ensure: 'directory',
+          owner: 'root',
+          group: 'sapsys',
+          mode: '0755',
+        )
+
+        is_expected.to contain_file('/sapmnt/EP0').with(
+          ensure: 'directory',
+          owner: 'ep0adm',
+          group: 'sapsys',
+          mode: '0755',
+        ).that_requires('File[/sapmnt]')
+
+        is_expected.to contain_file('/sapmnt/WP0').with(
+          ensure: 'directory',
+          owner: 'wp0adm',
+          group: 'sapsys',
+          mode: '0755',
+        ).that_requires('File[/sapmnt]')
+      }
+
+      # Ensure that the base shared instance directories exist
+      it {
+        is_expected.to contain_file('/usr/sap').with(
+          ensure: 'directory',
+          owner: 'root',
+          group: 'sapsys',
+          mode: '0755',
+        )
+
+        is_expected.to contain_file('/usr/sap/trans').with(
+          ensure: 'directory',
+          owner: 'root',
+          group: 'sapsys',
+          mode: '0755',
+        ).that_requires('File[/usr/sap]')
+      }
+
+      # Ensure the instance specific directories exist
+      it {
+        is_expected.to contain_file('/usr/sap/EP0').with(
+          ensure: 'directory',
+          owner: 'ep0adm',
+          group: 'sapsys',
+          mode: '0755',
+        ).that_requires('File[/usr/sap]')
+
+        is_expected.to contain_file('/usr/sap/WP0').with(
+          ensure: 'directory',
+          owner: 'wp0adm',
+          group: 'sapsys',
+          mode: '0755',
+        ).that_requires('File[/usr/sap]')
+      }
+    end
   end
 
   test_on = {
@@ -611,6 +729,14 @@ describe 'sap', type: :class do
           group: 'sapsys',
           mode: '0755',
         ).that_requires('File[/sapmnt]')
+      }
+
+      # Ensure that the application server directories are absent
+      it {
+        is_expected.not_to contain_file('/usr/sap')
+        is_expected.not_to contain_file('/usr/sap/EP0')
+        is_expected.not_to contain_file('/usr/sap/EP1')
+        is_expected.not_to contain_file('/usr/sap/trans')
       }
 
       # Ensure the DB2 directories are created for both EP0 and EP1

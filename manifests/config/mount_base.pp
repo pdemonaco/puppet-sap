@@ -33,5 +33,6 @@ class sap::config::mount_base {
       group   => 'sapsys',
       mode    => '0755',
       require => File['/usr/sap'],
+    }
   }
 }
