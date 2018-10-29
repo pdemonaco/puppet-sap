@@ -23,6 +23,11 @@
 #   Indicates whether the standard mount points should be created for the
 #   specified instance.
 #
+# @param mount_points [Hash[Enum,Hash]]
+#   Defines the mount points and supporting directories which should be created
+#   for each component type. Note that this structure is a deep hash with a `--`
+#   knockout value.
+#
 # @param router_oss_realm [Optional[String]]
 #   Specify OSS realm for SAP router connection. For example,
 #   `'p:CN=hostname.domain.tld, OU=0123456789, OU=SAProuter, O=SAP, C=DE'`
@@ -32,15 +37,6 @@
 #
 # @param distro_text [Optional[String]]
 #   Modify text in /etc/redhat-release 
-#
-# @param database_dir_counts [Optional[String]]
-#   Controls the number of data and tmp directories which must exist for a db2
-#   node. For example, if 'data' is set to 4 the following directories will be
-#   created for each SID:
-#     /db2/<SID>/sapdata1
-#     /db2/<SID>/sapdata2
-#     /db2/<SID>/sapdata3
-#     /db2/<SID>/sapdata4
 #
 # @example Application server containing an ADS instance and a Netweaver instance
 #  class { 'sap':
@@ -58,7 +54,7 @@ class sap (
   Array[Enum['base', 'base_extended', 'experimental', 'ads', 'bo',
   'cloudconnector', 'hana', 'router', 'db2']] $enabled_components = ['base'],
   Boolean $create_mount_points = false,
-  Hash[Pattern[/^[A-Z0-9]{3}$/], Hash[Enum['data', 'temp'], Integer]] $database_dir_counts = {},
+  Hash[Enum['common', 'base', 'db2'], Hash] $mount_points = {},
   Optional[String] $router_oss_realm  = undef,
   Optional[Array[String]] $router_rules = undef,
   Optional[String] $distro_text = undef
@@ -81,26 +77,6 @@ class sap (
   # Ensure an SID was specified
   if empty($system_ids) {
     fail('At least one SID must be specified!')
-  }
-
-  # If this is a db2 node the number of data and temp entries should be
-  # specified
-  if ('db2' in $enabled_components) and $create_mount_points {
-    $system_ids.each | $sid | {
-      unless( $sid in $database_dir_counts ) {
-        fail("db2 component: ${sid} missing entry in \'database_dir_counts\'!")
-
-      }
-
-      # Ensure that all fields were populated
-      $dir_counts = $database_dir_counts[$sid]
-      unless('data' in $dir_counts and 'temp' in $dir_counts) {
-        fail('db2 component: requires \'data\' and \'temp\' counts to be specified!')
-      }
-      unless($dir_counts['data'] >= 1) {
-        fail('db2 component: there must be at least 1 data directory!')
-      }
-    }
   }
 
   # Start workflow

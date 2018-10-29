@@ -427,8 +427,15 @@ describe 'sap', type: :class do
         }
       end
 
+      # Ensure we included the mountpoint class
+      it {
+        is_expected.to contain_class('sap::config')
+        is_expected.to contain_class('sap::config::mount_points')
+      }
+
       # Ensure the common directories exist
       it {
+        is_expected.to contain_sap__config__mount_point('/sapmnt')
         is_expected.to contain_file('/sapmnt').with(
           ensure: 'directory',
           owner: 'root',
@@ -559,7 +566,7 @@ describe 'sap', type: :class do
       end
     end
     
-    context "on #{os} db2 missing directory counts" do
+    context "on #{os} missing per_sid value" do
       let(:facts) do
         facts.merge(
           page_size: 4_096,
@@ -578,13 +585,19 @@ describe 'sap', type: :class do
             'db2',
           ],
           create_mount_points: true,
+          mount_points: {
+            db2: {
+              '/db2/Missing/per_sid': {
+              },
+            },
+          },
         }
       end
 
-      it { is_expected.to compile.with_all_deps.and_raise_error(%r{missing entry in 'database_dir_counts'!}) }
+      it { is_expected.to compile.with_all_deps.and_raise_error(%r{mount_point: 'db2' path '/db2/Missing/per_sid' missing 'per_sid'!}) }
     end
 
-    context "on #{os} db2 missing data directory counts" do
+    context "on #{os} db2 missing file_params" do
       let(:facts) do
         facts.merge(
           page_size: 4_096,
@@ -602,19 +615,21 @@ describe 'sap', type: :class do
           enabled_components: [
             'db2',
           ],
-          database_dir_counts: {
-            EP0: {
-              temp: 4,
+          create_mount_points: true,
+          mount_points: {
+            db2: {
+              '/db2/Missing/file_params': {
+                per_sid: false,
+              },
             },
           },
-          create_mount_points: true,
         }
       end
 
-      it { is_expected.to compile.with_all_deps.and_raise_error(%r{requires 'data' and 'temp' counts to be specified!}) }
+      it { is_expected.to compile.with_all_deps.and_raise_error(%r{mount_point: 'db2' path '/db2/Missing/file_params' missing 'file_params'!}) }
     end
 
-    context "on #{os} db2 missing temp directory counts" do
+    context "on #{os} db2 SID specific but missing substitution" do
       let(:facts) do
         facts.merge(
           page_size: 4_096,
@@ -632,19 +647,26 @@ describe 'sap', type: :class do
           enabled_components: [
             'db2',
           ],
-          database_dir_counts: {
-            EP0: {
-              data: 4,
+          create_mount_points: true,
+          mount_points: {
+            db2: {
+              '/db2/Missing/pattern': {
+                per_sid: true,
+                file_params: {
+                  owner: 'db2_sid_',
+                  group: 'db_sid_adm',
+                  mode: '0755',
+                },
+              },
             },
           },
-          create_mount_points: true,
         }
       end
 
-      it { is_expected.to compile.with_all_deps.and_raise_error(%r{requires 'data' and 'temp' counts to be specified!}) }
+      it { is_expected.to compile.with_all_deps.and_raise_error(%r{mount_point: SID specified for '/db2/Missing/pattern' but does not contain '_sid_' or '_SID_'!}) }
     end
 
-    context "on #{os} db2 requires at least 1 data volume" do
+    context "on #{os} db2 count specified without pattern" do
       let(:facts) do
         facts.merge(
           page_size: 4_096,
@@ -662,17 +684,62 @@ describe 'sap', type: :class do
           enabled_components: [
             'db2',
           ],
-          database_dir_counts: {
-            EP0: {
-              data: 0,
-              temp: 4,
+          create_mount_points: true,
+          mount_points: {
+            db2: {
+              '/db2/Missing/count_pattern': {
+                per_sid: true,
+                count: 4,
+                file_params: {
+                  owner: 'db2_sid_',
+                  group: 'db_sid_adm',
+                  mode: '0755',
+                },
+              },
             },
           },
-          create_mount_points: true,
         }
       end
 
-      it { is_expected.to compile.with_all_deps.and_raise_error(%r{there must be at least 1 data directory!}) }
+      it { is_expected.to compile.with_all_deps.and_raise_error(%r{mount_point: '/db2/Missing/count_pattern' specifies \$count but does not contain '_N_'!}) }
+    end
+
+    context "on #{os} db2 invalid count specified" do
+      let(:facts) do
+        facts.merge(
+          page_size: 4_096,
+          memory: {
+            system: {
+              total_bytes: 7_930_249_216,
+            },
+          },
+        )
+      end
+
+      let(:params) do
+        {
+          system_ids: ['EP0'],
+          enabled_components: [
+            'db2',
+          ],
+          create_mount_points: true,
+          mount_points: {
+            db2: {
+              '/db2/bad/count_N_': {
+                per_sid: true,
+                count: 0,
+                file_params: {
+                  owner: 'db2_sid_',
+                  group: 'db_sid_adm',
+                  mode: '0755',
+                },
+              },
+            },
+          },
+        }
+      end
+
+      it { is_expected.to compile.with_all_deps.and_raise_error(%r{mount_point: '/db2/bad/count_N_' specifies \$count not >= 1!}) }
     end
 
     context "on #{os} db2 valid directories" do
@@ -693,19 +760,15 @@ describe 'sap', type: :class do
           enabled_components: [
             'db2',
           ],
-          database_dir_counts: {
-            EP0: {
-              data: 4,
-              temp: 4,
-            },
-            EP1: {
-              data: 4,
-              temp: 0,
-            }
-          },
           create_mount_points: true,
         }
       end
+      
+      # Ensure we included the mountpoint class
+      it {
+        is_expected.to contain_class('sap::config')
+        is_expected.to contain_class('sap::config::mount_points')
+      }
 
       # Ensure the common directories exist
       it {
@@ -871,36 +934,6 @@ describe 'sap', type: :class do
           group: 'dbep1adm',
           mode: '0750',
         ).that_requires('File[/db2/EP1]')
-
-        # Temp Directories
-        is_expected.to contain_file('/db2/EP0/saptmp1').with(
-          ensure: 'directory',
-          owner: 'db2ep0',
-          group: 'dbep0adm',
-          mode: '0750',
-        ).that_requires('File[/db2/EP0]')
-        is_expected.not_to contain_file('/db2/EP1/saptmp1')
-        is_expected.to contain_file('/db2/EP0/saptmp2').with(
-          ensure: 'directory',
-          owner: 'db2ep0',
-          group: 'dbep0adm',
-          mode: '0750',
-        ).that_requires('File[/db2/EP0]')
-        is_expected.not_to contain_file('/db2/EP1/saptmp2')
-        is_expected.to contain_file('/db2/EP0/saptmp3').with(
-          ensure: 'directory',
-          owner: 'db2ep0',
-          group: 'dbep0adm',
-          mode: '0750',
-        ).that_requires('File[/db2/EP0]')
-        is_expected.not_to contain_file('/db2/EP1/saptmp3')
-        is_expected.to contain_file('/db2/EP0/saptmp4').with(
-          ensure: 'directory',
-          owner: 'db2ep0',
-          group: 'dbep0adm',
-          mode: '0750',
-        ).that_requires('File[/db2/EP0]')
-        is_expected.not_to contain_file('/db2/EP1/saptmp4')
       }
     end
   end

@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 * Added notify check for swap partition size
 * Added validation and update of /dev/shm size
 * Added test to ensure an SID is specified
+* Added management of default mount point creation for 'base' and 'db2' components
 
 ## Release 0.9.1
 * Some changes ?

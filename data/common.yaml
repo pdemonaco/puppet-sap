@@ -19,10 +19,151 @@ lookup_options:
   sap::params::experimental:
     merge: 'unique'
   sap::params::config_sysctl:
-    merge: 'deep'
-    knockout_prefix: '--'
+    merge: 
+      strategy: 'deep'
+      knockout_prefix: '--'
+      merge_hash_arrays: true
   sap::params::config_limits:
-    merge: 'deep'
-    knockout_prefix: '--'
+    merge: 
+      strategy: 'deep'
+      knockout_prefix: '--'
+      merge_hash_arrays: true
   sap::enabled_components:
     merge: 'unique'
+  sap::router_rules:
+    merge: 'unique'
+  sap::mount_points:
+    merge:
+      strategy: 'deep'
+      knockout_prefix: '--'
+      merge_hash_arrays: true
+
+# Standard SAP Directories
+# Hash structure
+#  - key: module
+#  - data: mount_points_hash
+# 
+#
+sap::mount_points:
+  common:
+    '/sapmnt':
+      per_sid: false
+      file_params:
+        owner: 'root'
+        group: 'sapsys'
+        mode: '0755'
+    '/sapmnt/_SID_':
+      per_sid: true
+      mount_params: 
+        managed: true
+        type: 'nfsv4'
+      file_params:
+        owner: '_sid_adm'
+        group: 'sapsys'
+        mode: '0755'
+      required_files:
+        - '/sapmnt'
+  base:
+    '/usr/sap':
+      per_sid: false
+      file_params:
+        owner: 'root'
+        group: 'sapsys'
+        mode: '0755'
+    '/usr/sap/trans':
+      per_sid: false
+      mount_params:
+        managed: true
+        type: 'nfsv4'
+      file_params:
+        owner: 'root'
+        group: 'sapsys'
+        mode: '0755'
+      required_files:
+        - '/usr/sap'
+    '/usr/sap/_SID_':
+      per_sid: true
+      mount_params:
+        managed: false
+      file_params:
+        owner: '_sid_adm'
+        group: 'sapsys'
+        mode: '0755'
+      required_files:
+        - '/usr/sap'
+  db2:
+    '/db2':
+      per_sid: false
+      file_params:
+        owner: 'root'
+        group: 'root'
+        mode: '0755'
+    '/db2/_SID_':
+      per_sid: true
+      file_params:
+        owner: 'db2_sid_'
+        group: 'db_sid_adm'
+        mode: '0755'
+      required_files:
+        - '/db2'
+    '/db2/db2_sid_':
+      per_sid: true
+      mount_params:
+        managed: false
+      file_params:
+        owner: 'db2_sid_'
+        group: 'db_sid_adm'
+        mode: '0755'
+      required_files:
+        - '/db2'
+    '/db2/_SID_/log_dir':
+      per_sid: true
+      mount_params:
+        managed: false
+      file_params:
+        owner: 'db2_sid_'
+        group: 'db_sid_adm'
+        mode: '0755'
+      required_files:
+        - '/db2/_SID_'
+    '/db2/_SID_/log_archive':
+      per_sid: true
+      mount_params:
+        managed: false
+      file_params:
+        owner: 'db2_sid_'
+        group: 'db_sid_adm'
+        mode: '0755'
+      required_files:
+        - '/db2/_SID_'
+    '/db2/_SID_/db2dump':
+      per_sid: true
+      mount_params:
+        managed: false
+      file_params:
+        owner: 'db2_sid_'
+        group: 'db_sid_adm'
+        mode: '0755'
+      required_files:
+        - '/db2/_SID_'
+    '/db2/_SID_/db2_sid_':
+      per_sid: true
+      mount_params:
+        managed: false
+      file_params:
+        owner: 'db2_sid_'
+        group: 'db_sid_adm'
+        mode: '0755'
+      required_files:
+        - '/db2/_SID_'
+    '/db2/_SID_/sapdata_N_':
+      per_sid: true
+      mount_params:
+        managed: false
+      count: 4
+      file_params:
+        owner: 'db2_sid_'
+        group: 'db_sid_adm'
+        mode: '0750'
+      required_files:
+        - '/db2/_SID_'

@@ -17,16 +17,6 @@ class sap::config {
 
   # Create mount points
   if $sap::create_mount_points {
-    contain sap::config::mount_common
-
-    $sap::enabled_components.each | $component | {
-      case $component {
-        'base': { contain sap::config::mount_base }
-        'db2': { contain 'sap::config::mount_db2' }
-        default: {
-          notify { "${component}: not relevant for mount point creation!": }
-        }
-      }
-    }
+    contain sap::config::mount_points
   }
 }
