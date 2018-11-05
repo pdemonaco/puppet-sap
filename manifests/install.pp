@@ -69,4 +69,9 @@ class sap::install {
       }
     }
   }
+
+  # Mount point dependencies
+  if $sap::manage_mount_dependencies {
+    contain sap::install::mount_dependencies
+  }
 }

@@ -14,6 +14,8 @@ All notable changes to this project will be documented in this file.
 * Added validation and update of /dev/shm size
 * Added test to ensure an SID is specified
 * Added management of default mount point creation for 'base' and 'db2' components
+* Added a top-level configuration of SID string replacement patterns
+* Added support for managing NFS mounts 
 
 ## Release 0.9.1
 * Some changes ?

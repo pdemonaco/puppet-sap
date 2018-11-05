@@ -32,6 +32,11 @@
 #   Specify OSS realm for SAP router connection. For example,
 #   `'p:CN=hostname.domain.tld, OU=0123456789, OU=SAProuter, O=SAP, C=DE'`
 #
+# @param manage_mount_dependencies [Optional[String]]
+#   When enabled this module will install and configure the puppet-nfs module
+#   detailed here: https://forge.puppet.com/derdanne/nfs
+#   Note that currently only NFSv4 is supported for clients.
+#
 # @param router_rules [Optional[Array[String]]]
 #   Specify array of rules for the SAP router
 #
@@ -55,6 +60,7 @@ class sap (
   'cloudconnector', 'hana', 'router', 'db2']] $enabled_components = ['base'],
   Boolean $create_mount_points = false,
   Hash[Enum['common', 'base', 'db2'], Hash] $mount_points = {},
+  Boolean $manage_mount_dependencies = false,
   Optional[String] $router_oss_realm  = undef,
   Optional[Array[String]] $router_rules = undef,
   Optional[String] $distro_text = undef

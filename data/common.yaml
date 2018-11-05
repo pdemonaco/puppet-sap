@@ -55,7 +55,7 @@ sap::mount_points:
     '/sapmnt/_SID_':
       per_sid: true
       mount_params: 
-        managed: true
+        managed: false
         type: 'nfsv4'
       file_params:
         owner: '_sid_adm'
@@ -73,7 +73,7 @@ sap::mount_points:
     '/usr/sap/trans':
       per_sid: false
       mount_params:
-        managed: true
+        managed: false
         type: 'nfsv4'
       file_params:
         owner: 'root'
@@ -167,3 +167,19 @@ sap::mount_points:
         mode: '0750'
       required_files:
         - '/db2/_SID_'
+
+# Default Parameters for supported mount types
+sap::params::config_default_mount_options:
+  nfsv4:
+    options: 'rw,soft,noac,timeo=200,retans=3,proto=tcp'
+    idmap_domain: 'puppet-sap'
+# SAP related commentary
+# https://launchpad.support.sap.com/#/notes/2093132
+# https://wiki.scn.sap.com/wiki/display/Basis/Recommended+mount+options+for+read-write+directories
+#
+# With these options if the NFS servers are down it waits about 1.5 minutes at boot then continues.  It will not automatically attempt to mount them later if they are available.
+#	rw - read/write
+#	soft - If nfs mount is unavailable then it times out after a preconfigured time
+#	noac - Prevents clients from caching file attributes, leading to greater cache coherence among NFS clients.  This option is recommended by SAP when using the soft option
+#	timeo=200 - Amount of time in tenths of seconds to wait for a response before it retries
+#	retrans=3 - Number of times the NFS client retries a request.

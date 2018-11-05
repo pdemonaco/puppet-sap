@@ -75,7 +75,7 @@
 #   
 #   ```puppet
 #   'component-name' => {
-#     path           => '/etc/security/limits.d', # this should be left alone - limits directrory
+#     path           => '/etc/security/limits.d', # this should be left alone - limits directory
 #     sequence       => '00', # string ID prepended to the limits file. e.g.
 #                             # /etc/security/limits.d/00-sap-base.conf
 #     per_sid        => true, # Indicates whether the domain has a _sid_
@@ -88,6 +88,21 @@
 #     entries => { # Hash containing the actual 
 #     }
 #   ```
+# 
+# @param config_default_mount_options [Hash[String,Hash[String,String]]]
+#   Default options to provide to provide for the mount operation in the case
+#   that they are not overridden locally. See 
+#   https://puppet.com/docs/puppet/latest/types/mount.html#mount-attribute-options
+#   for details. Note that this is a hash of hashes with an entry for each
+#   supported resource type.
+#
+# @param config_sid_lower_pattern [Optional[String]]
+#   String pattern used to make various components SAP System ID specific. An
+#   lowercase version of the sid will be inserted where this pattern is found.
+#
+# @param config_sid_upper_pattern [Optional[String]]
+#   String pattern used to make various components SAP System ID specific. An
+#   uppercase version of the sid will be inserted where this pattern is found.
 #
 class sap::params (
   Array[String] $packages_common                        = [],
@@ -166,6 +181,15 @@ class sap::params (
       ]
     ]
   ] $config_limits = {},
+  Hash[
+    String,
+    Hash[
+      String,
+      String,
+    ]
+  ] $config_default_mount_options            = {},
+  Optional[String] $config_sid_lower_pattern = '_sid_',
+  Optional[String] $config_sid_upper_pattern = '_SID_',
 ){
 
   # These components depend on 'base' and 'base_extendend'

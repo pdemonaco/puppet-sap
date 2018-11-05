@@ -503,6 +503,204 @@ describe 'sap', type: :class do
       },
     ],
   }
+  
+  on_supported_os(test_on).each do |os, facts|
+    context "on #{os} nfsv4 sapmnt with nfs management" do
+      let(:facts) do
+        facts.merge(
+          page_size: 4096,
+          memory: {
+            system: {
+              total_bytes: 7_930_249_216,
+            },
+            swap: {
+              total_bytes: 4_294_901_760,
+            },
+          },
+          mountpoints: {
+            '/dev/shm' => {
+              size_bytes: 3_961_782_272,
+            },
+          },
+        )
+      end
+      let(:params) do
+        {
+          enabled_components: [
+            'base',
+          ],
+          system_ids: [
+            'EP0',
+            'WP0',
+          ],
+          create_mount_points: true,
+          manage_mount_dependencies: true,
+          mount_points: {
+            common: {
+              '/sapmnt': {
+                per_sid: false,
+                file_params: {
+                  owner: 'root',
+                  group: 'sapsys',
+                  mode: '0755',
+                },
+              },
+              '/sapmnt/_SID_': {
+                per_sid: true,
+                file_params: {
+                  owner: '_sid_adm',
+                  group: 'sapsys',
+                  mode: '0755',
+                },
+                mount_params: {
+                  managed: true,
+                  type: 'nfsv4',
+                  server: 'nfs.puppet.sap',
+                  share: '/srv/nfs/sapmnt/_SID_',
+                },
+                required_files: [
+                  '/sapmnt',
+                ],
+              },
+            },
+            base: {
+              '/usr/sap': {
+                per_sid: false,
+                file_params: {
+                  owner: 'root',
+                  group: 'sapsys',
+                  mode: '0755',
+                },
+              },
+              '/usr/sap/trans': {
+                per_sid: false,
+                file_params: {
+                  owner: 'root',
+                  group: 'sapsys',
+                  mode: '0755',
+                },
+                mount_params: {
+                  managed: true,
+                  type: 'nfsv4',
+                  server: 'nfs.puppet.sap',
+                  share: '/srv/nfs/trans',
+                },
+                required_files: [
+                  '/usr/sap',
+                ],
+              },
+              '/usr/sap/_SID_': {
+                per_sid: true,
+                file_params: {
+                  owner: '_sid_adm',
+                  group: 'sapsys',
+                  mode: '0755',
+                },
+                mount_params: {
+                  managed: false,
+                },
+                required_files: [
+                  '/usr/sap',
+                ],
+              },
+            },
+          },
+        }
+      end
+
+      # Ensure it compiles
+      it { is_expected.to compile.with_all_deps }
+
+      # Ensure the mount dependency class is included
+      it { is_expected.to contain_class('sap::install::mount_dependencies') }
+
+      # Project the expected file & resource counts
+      it {
+        is_expected.to have_sap__config__mount_point_resource_count(7)
+        is_expected.to have_nfs__client__mount_resource_count(3)
+      }
+
+      # Verify the actual directories
+      it {
+        is_expected.to contain_sap__config__mount_point('/sapmnt')
+        is_expected.to contain_sap__config__mount_point('/sapmnt/_SID__EP0')
+        is_expected.to contain_sap__config__mount_point('/sapmnt/_SID__WP0')
+
+        is_expected.to contain_file('/sapmnt').with(
+          ensure: 'directory',
+          owner: 'root',
+          group: 'sapsys',
+          mode: '0755',
+        )
+
+        is_expected.to contain_nfs__client__mount('/sapmnt/EP0').with(
+          ensure: 'mounted',
+          server: 'nfs.puppet.sap',
+          share: '/srv/nfs/sapmnt/EP0',
+          atboot: true,
+          options_nfsv4: 'rw,soft,noac,timeo=200,retans=3,proto=tcp',
+          owner: 'ep0adm',
+          group: 'sapsys',
+          mode: '0755',
+        ).that_requires('File[/sapmnt]')
+
+        is_expected.to contain_nfs__client__mount('/sapmnt/WP0').with(
+          ensure: 'mounted',
+          server: 'nfs.puppet.sap',
+          share: '/srv/nfs/sapmnt/WP0',
+          atboot: true,
+          options_nfsv4: 'rw,soft,noac,timeo=200,retans=3,proto=tcp',
+          owner: 'wp0adm',
+          group: 'sapsys',
+          mode: '0755',
+        ).that_requires('File[/sapmnt]')
+      }
+
+      # Ensure that the base shared instance directories exist
+      it {
+        is_expected.to contain_sap__config__mount_point('/usr/sap')
+        is_expected.to contain_sap__config__mount_point('/usr/sap/trans')
+
+        is_expected.to contain_file('/usr/sap').with(
+          ensure: 'directory',
+          owner: 'root',
+          group: 'sapsys',
+          mode: '0755',
+        )
+
+        is_expected.to contain_nfs__client__mount('/usr/sap/trans').with(
+          ensure: 'mounted',
+          server: 'nfs.puppet.sap',
+          share: '/srv/nfs/trans',
+          atboot: true,
+          options_nfsv4: 'rw,soft,noac,timeo=200,retans=3,proto=tcp',
+          owner: 'root',
+          group: 'sapsys',
+          mode: '0755',
+        ).that_requires('File[/usr/sap]')
+      }
+
+      # Ensure the instance specific directories exist
+      it {
+        is_expected.to contain_sap__config__mount_point('/usr/sap/_SID__EP0')
+        is_expected.to contain_sap__config__mount_point('/usr/sap/_SID__WP0')
+
+        is_expected.to contain_file('/usr/sap/EP0').with(
+          ensure: 'directory',
+          owner: 'ep0adm',
+          group: 'sapsys',
+          mode: '0755',
+        ).that_requires('File[/usr/sap]')
+
+        is_expected.to contain_file('/usr/sap/WP0').with(
+          ensure: 'directory',
+          owner: 'wp0adm',
+          group: 'sapsys',
+          mode: '0755',
+        ).that_requires('File[/usr/sap]')
+      }
+    end
+  end
 
   on_supported_os(test_on).each do |os, facts|
     context "on #{os} db2 without mountpoints" do
@@ -566,7 +764,7 @@ describe 'sap', type: :class do
       end
     end
     
-    context "on #{os} missing per_sid value" do
+    context "on #{os} db2 missing per_sid value" do
       let(:facts) do
         facts.merge(
           page_size: 4_096,

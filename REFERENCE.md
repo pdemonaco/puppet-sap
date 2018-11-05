@@ -9,9 +9,12 @@
 * [`sap::config`](#sapconfig): Private class used to control configuration file deployment.
 * [`sap::config::common`](#sapconfigcommon): Trick SAP into thinking this host is running a supported RHEL
 * [`sap::config::limits`](#sapconfiglimits): Generates an etc limits file for each relevant enabled component.
+* [`sap::config::mount_points`](#sapconfigmount_points): Creates and manages mountpoints relevant to each instance type.
 * [`sap::config::router`](#sapconfigrouter): Class: sap::config::router  This class contain the configuration for SAP Router  Parameters:   This module has no parameters  Actions:      T
 * [`sap::config::sysctl`](#sapconfigsysctl): Configures sysctl parameters for the selected components.
+* [`sap::config::tmpfs`](#sapconfigtmpfs): Ensures that the tmpfs partition is configured per SAP recommendations Add swap space check per
 * [`sap::install`](#sapinstall): Installs the packages associated with the selected sets
+* [`sap::install::mount_dependencies`](#sapinstallmount_dependencies): Installs dependent modules needed for mount points
 * [`sap::params`](#sapparams): This module contains the parameters for SAP Netweaver
 * [`sap::service`](#sapservice): Class: sap::service  This class contain the service configuration for SAP Netweaver  Parameters:   This class has no parameters  Actions:    
 * [`sap::service::cloudconnector`](#sapservicecloudconnector): Class: sap::service::cloudconnector  This module contain the service configuration for SAP Cloud Connector  Parameters:   This module has no 
@@ -19,6 +22,7 @@
 
 **Defined types**
 
+* [`sap::config::mount_point`](#sapconfigmount_point): 
 * [`sap::install::package_set`](#sapinstallpackage_set): Manages the installation of a package set
 
 **Functions**
@@ -58,7 +62,7 @@ An array of SAP system IDs (SIDs) which will be present on the target host.
 Note that each entry must be exactly 3 characters in length and contain
 exclusively uppercase characters.
 
-Default value: `undef`
+Default value: []
 
 ##### `enabled_components`
 
@@ -77,6 +81,25 @@ this is an enum which includes the following valid options:
 
 Default value: ['base']
 
+##### `create_mount_points`
+
+Data type: `Boolean`
+
+Indicates whether the standard mount points should be created for the
+specified instance.
+
+Default value: `false`
+
+##### `mount_points`
+
+Data type: `Hash[Enum['common', 'base', 'db2'], Hash]`
+
+Defines the mount points and supporting directories which should be created
+for each component type. Note that this structure is a deep hash with a `--`
+knockout value.
+
+Default value: {}
+
 ##### `router_oss_realm`
 
 Data type: `Optional[String]`
@@ -85,6 +108,16 @@ Specify OSS realm for SAP router connection. For example,
 `'p:CN=hostname.domain.tld, OU=0123456789, OU=SAProuter, O=SAP, C=DE'`
 
 Default value: `undef`
+
+##### `manage_mount_dependencies`
+
+Data type: `Boolean`
+
+When enabled this module will install and configure the puppet-nfs module
+detailed here: https://forge.puppet.com/derdanne/nfs
+Note that currently only NFSv4 is supported for clients.
+
+Default value: `false`
 
 ##### `router_rules`
 
@@ -117,6 +150,10 @@ enabled component. Note that some components do not specify limits while
 others may have SID specific data which will result in a more complicated
 limit output
 
+### sap::config::mount_points
+
+Creates and manages mountpoints relevant to each instance type.
+
 ### sap::config::router
 
 Class: sap::config::router
@@ -136,10 +173,20 @@ Sample Usage: include sap_router::config
 This class configures the sysctl parameters based on the values
 provided in sap::param::config_sysctl for each enabled component
 
+### sap::config::tmpfs
+
+Ensures that the tmpfs partition is configured per SAP recommendations
+Add swap space check per
+
 ### sap::install
 
 Packages are installed based on the selections provided to the main sap class
 using sane defaults configured in hiera.
+
+### sap::install::mount_dependencies
+
+When enabled this ensures that all necessary dependencies for mount point
+management are installed
 
 ### sap::params
 
@@ -377,7 +424,7 @@ instances and db2. The hash has the following structure
 
 ```puppet
 'component-name' => {
-  path           => '/etc/security/limits.d', # this should be left alone - limits directrory
+  path           => '/etc/security/limits.d', # this should be left alone - limits directory
   sequence       => '00', # string ID prepended to the limits file. e.g.
                           # /etc/security/limits.d/00-sap-base.conf
   per_sid        => true, # Indicates whether the domain has a _sid_
@@ -392,6 +439,42 @@ instances and db2. The hash has the following structure
 ```
 
 Default value: {}
+
+##### `config_default_mount_options`
+
+Data type: `Hash[
+    String,
+    Hash[
+      String,
+      String,
+    ]
+  ]`
+
+Default options to provide to provide for the mount operation in the case
+that they are not overridden locally. See
+https://puppet.com/docs/puppet/latest/types/mount.html#mount-attribute-options
+for details. Note that this is a hash of hashes with an entry for each
+supported resource type.
+
+Default value: {}
+
+##### `config_sid_lower_pattern`
+
+Data type: `Optional[String]`
+
+String pattern used to make various components SAP System ID specific. An
+lowercase version of the sid will be inserted where this pattern is found.
+
+Default value: '_sid_'
+
+##### `config_sid_upper_pattern`
+
+Data type: `Optional[String]`
+
+String pattern used to make various components SAP System ID specific. An
+uppercase version of the sid will be inserted where this pattern is found.
+
+Default value: '_SID_'
 
 ### sap::service
 
@@ -436,6 +519,93 @@ Requires:     This module has no requirements
 Sample Usage:
 
 ## Defined types
+
+### sap::config::mount_point
+
+The sap::config::mount_point class.
+
+#### Parameters
+
+The following parameters are available in the `sap::config::mount_point` defined type.
+
+##### `mount_path`
+
+Data type: `String`
+
+The path to the mountpoint. Note that this is a namevar.
+
+Default value: $name
+
+##### `file_params`
+
+Data type: `Hash[String, String]`
+
+Any valid parameter which could be provided to a File resource type can be
+included in this hash. Note that ensure is always set to `directory`.
+
+Default value: []
+
+##### `sid`
+
+Data type: `Optional[String]`
+
+The SID for this mount_point if it is an SID specific entity.
+
+Default value: `undef`
+
+##### `count`
+
+Data type: `Optional[Integer]`
+
+Indicates that this path should be created $count times. The path must
+contain the string `_N_` which will be substituted with the count.
+For example `/db2/ECP/sapdata_N_`
+
+Default value: `undef`
+
+##### `mount_parameters`
+
+Data type: `Optional[Hash]`
+
+TODO - fill out this section
+
+Default value: {}
+
+##### `required_files`
+
+Data type: `Optional[Array[String]]`
+
+Ordered list of files which this mount point should require.
+
+Default value: []
+
+##### `sid_lower_pattern`
+
+Data type: `Optional[String]`
+
+String pattern used to make various components SAP System ID specific. An
+lowercase version of the sid will be inserted where this pattern is found.
+
+Default value: `undef`
+
+##### `sid_upper_pattern`
+
+Data type: `Optional[String]`
+
+String pattern used to make various components SAP System ID specific. An
+uppercase version of the sid will be inserted where this pattern is found.
+
+Default value: `undef`
+
+##### `mount_defaults`
+
+Data type: `Optional[Hash]`
+
+Hash of hashes containing mount-type specific defaults. Currently this is
+used exclusively to provide default parameters to the NFSv4 client mounts
+for SAP related connections.
+
+Default value: {}
 
 ### sap::install::package_set
 

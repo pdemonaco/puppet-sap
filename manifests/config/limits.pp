@@ -20,7 +20,17 @@ class sap::config::limits {
       # using the SID pattern
       if $per_sid {
         # Retrieve target pattern
-        $sid_pattern = $parameters['sid_pattern']
+        case $parameters['sid_pattern'] {
+          'upper': {
+            $sid_pattern = $sap::params::config_sid_upper_pattern
+          }
+          'lower': {
+            $sid_pattern = $sap::params::config_sid_lower_pattern
+          }
+          default: {
+            $sid_pattern = $sap::params::config_sid_lower_pattern
+          }
+        }
 
         # Replace the SID pattern in the user/group name with the system SID
         # TODO - maybe only do this for keys which match the pattern?

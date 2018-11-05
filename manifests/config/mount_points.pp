@@ -47,12 +47,15 @@ class sap::config::mount_points {
 
             # Assemble the argument to the defined type
             sap::config::mount_point { "${base_path}_${sid}":
-              mount_path       => $base_path,
-              file_params      => $base_file_params,
-              sid              => $sid,
-              count            => $base_count,
-              mount_parameters => $base_mount_params,
-              required_files   => $base_required_files,
+              mount_path        => $base_path,
+              file_params       => $base_file_params,
+              sid               => $sid,
+              sid_upper_pattern => $sap::params::config_sid_upper_pattern,
+              sid_lower_pattern => $sap::params::config_sid_lower_pattern,
+              count             => $base_count,
+              mount_parameters  => $base_mount_params,
+              mount_defaults    => $sap::params::config_default_mount_options,
+              required_files    => $base_required_files,
             }
           }
         } else {
@@ -60,6 +63,7 @@ class sap::config::mount_points {
             file_params      => $base_file_params,
             count            => $base_count,
             mount_parameters => $base_mount_params,
+            mount_defaults   => $sap::params::config_default_mount_options,
             required_files   => $base_required_files,
           }
         }

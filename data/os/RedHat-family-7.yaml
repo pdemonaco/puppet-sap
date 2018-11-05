@@ -124,7 +124,7 @@ sap::params::config_limits:
     sequence: '00'
     template: 'sap/etc/security/limits.d/conf.epp'
     per_sid: true
-    sid_pattern: '_sid_'
+    sid_pattern: 'lower'
     header_comment:
       - 'Limits parameters per IBM documentation for non-root users. Version 10.5'
       - 'https://www.ibm.com/support/knowledgecenter/en/SSEPGG_10.5.0/com.ibm.db2.luw.qb.server.doc/doc/r0052441.html'
