@@ -171,7 +171,7 @@ sap::mount_points:
 # Default Parameters for supported mount types
 sap::params::config_default_mount_options:
   nfsv4:
-    options: 'rw,soft,noac,timeo=200,retans=3,proto=tcp'
+    options: 'rw,soft,noac,timeo=200,retrans=3,proto=tcp'
     idmap_domain: 'puppet-sap'
 # SAP related commentary
 # https://launchpad.support.sap.com/#/notes/2093132
