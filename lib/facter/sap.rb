@@ -6,46 +6,50 @@
 # Date:   Fri Nov 11 11:47:53 CET 2016
 #
 
-# Create a hash for SAP items
-sap_items = Hash.new ''
+Facter.add(:sap, type: :aggregate) do
+  confine kernel: 'Linux'
 
-# Detect SAP SID by analyzing /sapmnt
-if File.exist?('/sapmnt')
-  Dir.foreach('/sapmnt') do |item|
-    sap_items['sid'] = item.match(%r{[A-Z0-9]{3}})
-  end
-end
+  # Potential SID list
+  sid_hash = {}
 
-# Detect type by analyzing /usr/sap/SID/INSTANCE
-if Dir.exist?('/usr/sap/' + sap_items['sid'] + '/D*')
-  sap_items['type'] = 'abap'
-end
-if Dir.exist?('/usr/sap/' + sap_items['sid'] + '/D*/j2ee')
-  sap_items['type'] = 'dual'
-end
-if Dir.exist?('/usr/sap/' + sap_items['sid'] + '/J*')
-  sap_items['type'] = 'java'
-end
+  # Identify all local SIDs by interrogating /sapmnt
+  if File.exist? '/sapmnt'
+    chunk(:sids) do
+      Dir.foreach('/sapmnt') do |item|
+        if item =~ %r{[A-Z0-9]{3}}
+          sid = item.strip
+          sid_detail = {}
 
-# Detect instance by analyzing /usr/sap/SID/INSTANCE
-if Dir.exist?('/usr/sap/' + sap_items['sid'] + '/D*')
-  sap_items['instance'] = 'dialog'
-end
-if Dir.exist?('/usr/sap/' + sap_items['sid'] + '/DV*')
-  sap_items['instance'] = 'central'
-end
-if Dir.exist?('/usr/sap/' + sap_items['sid'] + '/J*')
-  sap_items['instance'] = 'dialog'
-end
-if Dir.exist?('/usr/sap/' + sap_items['sid'] + '/SCS*')
-  sap_items['instance'] = 'central'
-end
+          # Determine instance type
+          if Dir.exist?('/usr/sap/' + sid + '/D*')
+            sid_detail[:type] = 'abap'
+          end
+          if Dir.exist?('/usr/sap/' + sid + '/D*/j2ee')
+            sid_detail[:type] = 'dual'
+          end
+          if Dir.exist?('/usr/sap/' + sid + '/J*')
+            sid_detail[:type] = 'java'
+          end
 
-# Set facts based on sap_keyname
-unless sap_items.nil?
-  sap_items.each do |key, val|
-    unless val.nil?
-      Facter.add("sap_#{key}") { setcode { val } }
+          # Determine instance components
+          sid_instances = []
+          Dir.foreach('/usr/sap/' + sid) do |instdir|
+            case instdir
+            when %r{^D.*|^J.*}
+              sid_instances.push('dialog')
+            when %r!^A{,1}SCS.*!
+              sid_instances.push('central')
+            when %r!^ERS[0-9]{2,}!
+              sid_instances.push('enqueue-replication')
+            end
+          end
+
+          # Remove duplicate instances and add
+          sid_detail[:instances] = sid_instances.uniq
+          sid_hash[sid] = sid_detail
+        end
+      end
+      { sid_hash: sid_hash }
     end
   end
 end
