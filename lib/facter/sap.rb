@@ -33,19 +33,27 @@ Facter.add(:sap, type: :aggregate) do
 
           # Determine instance components
           sid_instances = []
-          Dir.foreach('/usr/sap/' + sid) do |instdir|
-            case instdir
-            when %r{^D.*|^J.*}
-              sid_instances.push('dialog')
-            when %r!^A{,1}SCS.*!
-              sid_instances.push('central')
-            when %r!^ERS[0-9]{2,}!
-              sid_instances.push('enqueue-replication')
+          if Dir.exist?('/usr/sap' + sid)
+            Dir.foreach('/usr/sap/' + sid) do |instdir|
+              case instdir
+              when %r{^D.*|^J.*}
+                sid_instances.push('dialog')
+              when %r!^A{,1}SCS.*!
+                sid_instances.push('central')
+              when %r!^ERS[0-9]{2,}!
+                sid_instances.push('enqueue-replication')
+              end
             end
           end
 
+          # Check for a database instance
+          if Dir.exist?('/db2/' + sid)
+            sid_instances.push('database')
+          end
           # Remove duplicate instances and add
-          sid_detail[:instances] = sid_instances.uniq
+          if sid_instances.length > 0
+            sid_detail[:instances] = sid_instances.uniq
+          end
           sid_hash[sid] = sid_detail
         end
       end
