@@ -17,6 +17,9 @@ All notable changes to this project will be documented in this file.
 * Added a top-level configuration of SID string replacement patterns
 * Added support for managing NFS mounts 
 
+**Bugfixes**
+* Expanded the yum groups to actual package names to avoid constant service restarts
+
 ## Release 0.9.1
 * Some changes ?
 
