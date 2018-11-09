@@ -2,10 +2,44 @@
 # Common packages
 sap::params::packages_common:
   - 'uuidd'
-  - '@large-systems'
-  - '@compat-libraries'
-  - '@network-file-system-client'
-  - '@performance'
+  - 'numactl' # Start large-systems
+  - 'numad'
+  - 'hwloc'
+  - 'libhugetlbfs'
+  - 'libhugetlbfs-utils'
+  - 'compat-db47' # Start @compat-libraries
+  - 'compat-glibc'
+  - 'compat-libcap1'
+  - 'compat-libf2c-34'
+  - 'compat-libgfortran-41'
+  - 'compat-libtiff3'
+  - 'compat-openldap'
+  - 'libpng12'
+  - 'openssl098e'
+  - 'autofs' # Start @network-file-system-client
+  - 'cgdcbxd'
+  - 'cifs-utils'
+  - 'device-mapper-multipath'
+  - 'fcoe-utils'
+  - 'gssproxy'
+  - 'iscsi-initiator-utils'
+  - 'lldpad'
+#  - 'nfs-utils' # Intentionally removed
+#  - 'nfs4-acl-tools'
+  - 'samba-client'
+  - 'targetcli'
+  - 'blktrace'  # Begin @performance
+  - 'sysstat'
+  - 'dstat' 
+  - 'iotop'
+  - 'iowatcher'
+  - 'latencytop'
+  - 'latencytop-tui'
+  - 'oprofile'
+  - 'parfait'
+  - 'pcp'
+  - 'perf'
+  - 'powertop'
 
 # Base packages
 sap::params::packages_base:
@@ -73,11 +107,8 @@ sap::params::packages_hana:
   - 'krb5-workstation'
   - 'libcanberra-gtk2'
   - 'libicu'
-  - 'libpng12'
   - 'libtool-ltdl'
   - 'net-tools'
-  - 'numactl'
-  - 'openssl098e'
   - 'PackageKit-gtk3-module'
   - 'xfsprogs'
   - 'xulrunner'
