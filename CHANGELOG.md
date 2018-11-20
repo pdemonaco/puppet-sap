@@ -19,6 +19,7 @@ All notable changes to this project will be documented in this file.
 
 **Bugfixes**
 * Expanded the yum groups to actual package names to avoid constant service restarts
+* Corrected the root cause of the restarts by specifying the uuidd.socket service instead of just uuidd.service. This is due to systemctl shenanigans as described in [PUP-6759](https://tickets.puppetlabs.com/browse/PUP-6759)
 
 ## Release 0.9.1
 * Some changes ?
