@@ -138,7 +138,7 @@ sap::params::config_saprouter_sysconfig: '/etc/sysconfig/sap-router'
 sap::params::config_saprouter_sysconfig_template: 'sap/etc/sysconfig/sap-router.erb'
 
 # General Service Definition
-sap::params::service_uuidd: 'uuidd'
+sap::params::service_uuidd: 'uuidd.socket'
 
 # SAP Cloud Connector Service
 sap::params::service_scc: 'scc_daemon'

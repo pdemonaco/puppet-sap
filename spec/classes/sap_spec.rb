@@ -336,7 +336,7 @@ describe 'sap', type: :class do
       end
 
       # General UUID service
-      it { is_expected.to contain_service('uuidd').with('ensure' => 'running', 'enable' => 'true') }
+      it { is_expected.to contain_service('uuidd.socket').with('ensure' => 'running', 'enable' => 'true') }
 
       # SAP router service
       it { is_expected.to contain_service('sap-router').with('ensure' => 'running', 'enable' => 'true') }
