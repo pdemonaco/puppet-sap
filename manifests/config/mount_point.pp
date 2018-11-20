@@ -126,9 +126,7 @@ define sap::config::mount_point (
         $updated_share = regsubst($updated_share_partial,
           $sid_lower_pattern, $sid_lower, 'G')
       }
-      default: {
-        notify { "mount_point: '${updated_mount_path}' type '${mount_type}' has no SID specific parameters!": }
-      }
+      default: {}
     }
   } else {
     $updated_mount_path = $mount_path
@@ -140,9 +138,7 @@ define sap::config::mount_point (
       'nfsv4': {
         $updated_share = $mount_parameters['share']
       }
-      default: {
-        notify { "mount_point: '${updated_mount_path}' type '${mount_type}' has no parameters!": }
-      }
+      default: {}
     }
   }
 

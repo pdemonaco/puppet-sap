@@ -34,8 +34,6 @@ class sap::config::tmpfs {
   # If the swap is too small, warn!
   if $swap_target > $swap_gb {
     notify { "SAP: Swap space may be undersized! Current ${swap_gb} GiB, Target ${swap_target} GiB": }
-  } else {
-    notify { 'SAP: Swap space is appropriately sized!': }
   }
 
   # Ensure that the tmpfs is roughly ( RAM + SWAP ) * 0.75
