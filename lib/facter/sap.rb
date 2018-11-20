@@ -36,18 +36,15 @@ Facter.add(:sap, type: :aggregate) do
           if Dir.exist?('/usr/sap/' + sid)
             Dir.foreach('/usr/sap/' + sid) do |instdir|
               if %r!^(?<insttype>[A-Z]+)(?<instnum>[0-9]{2})$! =~ instdir
-                sid_instances[instnum] = insttype
+                sid_instances[instnum.strip] = insttype.strip
               end
             end
           end
+          sid_detail[:instances] = sid_instances
 
           # Check for a database instance
           if Dir.exist?('/db2/' + sid)
-            sid_instances['database'] = 'db2'
-          end
-          # Remove duplicate instances and add
-          if sid_instances.length > 0
-            sid_detail[:instances] = sid_instances
+            sid_instances[:database] = 'db2'
           end
           sid_hash[sid] = sid_detail
         end
