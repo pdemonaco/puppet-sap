@@ -68,12 +68,17 @@ class sap (
 
   # Fail if dependencies are not met
   $base_enabled = 'base' in $enabled_components
-  $base_extended_enabled= 'base_extended' in $enabled_components
-  $sap::params::advanced_components.each | $component | {
+  $sap::params::requires_base.each | $component | {
     if ($component in $enabled_components) {
       unless($base_enabled) {
         fail("Component '${component}' requires 'base'!")
       }
+    }
+  }
+
+  $base_extended_enabled = 'base_extended' in $enabled_components
+  $sap::params::requires_base_extended.each | $component | {
+    if ($component in $enabled_components) {
       unless($base_extended_enabled) {
         fail("Component '${component}' requires 'base_extended'!")
       }

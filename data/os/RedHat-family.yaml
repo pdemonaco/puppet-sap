@@ -128,6 +128,12 @@ sap::params::packages_experimental:
   - 'sap-toolbox'
   - 'sap-sapcar'
 
+# DB2 Specific requirements
+sap::params::packages_db2:
+  - 'ksh'
+# 'libaio' # handled by base
+# 'compat-libstdc++' # only needed for x86_64 - handled in base
+
 # Config Definitions
 sap::params::config_redhat_release_conf: '/etc/redhat-release'
 

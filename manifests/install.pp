@@ -9,7 +9,8 @@ class sap::install {
     package_list  => $sap::params::packages_common,
   }
 
-  if 'base' in $sap::enabled_components {
+  # DB2 depends on packages in the base set.
+  if 'base' in $sap::enabled_components or 'db2' in $sap::enabled_components {
     sap::install::package_set { 'base':
       package_list  => $sap::params::packages_base,
     }
@@ -24,6 +25,12 @@ class sap::install {
   if 'ads' in $sap::enabled_components {
     sap::install::package_set { 'ads':
       package_list  => $sap::params::packages_ads,
+    }
+  }
+
+  if 'db2' in $sap::enabled_components {
+    sap::install::package_set { 'db2':
+      package_list => $sap::params::packages_db2,
     }
   }
 

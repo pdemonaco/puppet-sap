@@ -711,6 +711,9 @@ describe 'sap', type: :class do
             system: {
               total_bytes: 7_930_249_216,
             },
+            swap: {
+              total_bytes: 4_294_901_760,
+            },
           },
         )
       end
@@ -763,7 +766,7 @@ describe 'sap', type: :class do
         expect(content).to match(%r{\n@dbep1adm    soft    fsize    unlimited\n})
       end
     end
-    
+
     context "on #{os} db2 missing per_sid value" do
       let(:facts) do
         facts.merge(
@@ -771,6 +774,9 @@ describe 'sap', type: :class do
           memory: {
             system: {
               total_bytes: 7_930_249_216,
+            },
+            swap: {
+              total_bytes: 4_294_901_760,
             },
           },
         )
@@ -803,6 +809,9 @@ describe 'sap', type: :class do
             system: {
               total_bytes: 7_930_249_216,
             },
+            swap: {
+              total_bytes: 4_294_901_760,
+            },
           },
         )
       end
@@ -834,6 +843,9 @@ describe 'sap', type: :class do
           memory: {
             system: {
               total_bytes: 7_930_249_216,
+            },
+            swap: {
+              total_bytes: 4_294_901_760,
             },
           },
         )
@@ -871,6 +883,9 @@ describe 'sap', type: :class do
           memory: {
             system: {
               total_bytes: 7_930_249_216,
+            },
+            swap: {
+              total_bytes: 4_294_901_760,
             },
           },
         )
@@ -910,6 +925,9 @@ describe 'sap', type: :class do
             system: {
               total_bytes: 7_930_249_216,
             },
+            swap: {
+              total_bytes: 4_294_901_760,
+            },
           },
         )
       end
@@ -948,6 +966,9 @@ describe 'sap', type: :class do
             system: {
               total_bytes: 7_930_249_216,
             },
+            swap: {
+              total_bytes: 4_294_901_760,
+            },
           },
         )
       end
@@ -967,6 +988,17 @@ describe 'sap', type: :class do
         is_expected.to contain_class('sap::config')
         is_expected.to contain_class('sap::config::mount_points')
       }
+
+      # Ensure DB2 packages are present
+      it {
+        is_expected.to contain_package('libaio').with_ensure('installed')
+        is_expected.to contain_package('ksh').with_ensure('installed')
+      }
+      if facts[:architecture] == 'ppc64'
+        it {
+          is_expected.to contain_package('vacpp.rte').with_ensure('installed')
+        }
+      end
 
       # Ensure the common directories exist
       it {

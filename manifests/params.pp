@@ -35,6 +35,9 @@
 #   Special SAP tools and utilities including sapcar and others... Appears to be
 #   custom built?
 #
+# @param packages_db2 [Array[String]]
+#   Extra DB2 package requirements which are included on a per OS basis.
+#
 # @param config_redhat_release_conf [String]
 #   This should point to the path of the desired redhat release config file.
 #
@@ -114,6 +117,7 @@ class sap::params (
   Array[String] $packages_cloudconnector                = [],
   Array[String] $packages_saprouter                     = [],
   Array[String] $packages_experimental                  = [],
+  Array[String] $packages_db2                           = [],
   String $config_redhat_release_conf                    = undef,
   String $config_saproutetab                            = undef,
   String $config_saproutetab_template                   = undef,
@@ -193,7 +197,8 @@ class sap::params (
 ){
 
   # These components depend on 'base' and 'base_extendend'
-  $advanced_components = ['bo', 'ads', 'hana']
+  $requires_base = [ 'base_extended', 'bo', 'ads', 'hana' ]
+  $requires_base_extended = ['bo', 'ads', 'hana']
 
   # RHEL 7 only componetns
   $rhel7_components = ['bo', 'cloudconnector', 'hana']
