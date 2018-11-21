@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 * Added management of default mount point creation for 'base' and 'db2' components
 * Added a top-level configuration of SID string replacement patterns
 * Added support for managing NFS mounts 
+* Includes required packages for db2 10.5
 
 **Bugfixes**
 * Expanded the yum groups to actual package names to avoid constant service restarts
