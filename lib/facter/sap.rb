@@ -33,18 +33,34 @@ Facter.add(:sap, type: :aggregate) do
 
           # Determine instance components
           sid_instances = {}
-          if Dir.exist?('/usr/sap/' + sid)
-            Dir.foreach('/usr/sap/' + sid) do |instdir|
-              if %r!^(?<insttype>[A-Z]+)(?<instnum>[0-9]{2})$! =~ instdir
-                sid_instances[instnum.strip] = insttype.strip
+          Dir.foreach('/usr/sap/' + sid) do |instdir|
+            if %r!^(?<insttype>[A-Z]+)(?<instnum>[0-9]{2})$! =~ instdir
+              inst_data = {}
+              # Record the type
+              inst_data[:type] = insttype.strip
+
+              # Identify each profile file and add it to an array
+              profile_files = []
+              profile_dir = File.join('/sapmnt', sid, '/profile')
+              profile_matches = Dir.glob(
+                File.join(profile_dir, "*#{insttype.strip}#{instnum.strip}*"),
+              )
+              profile_matches.each do |profile_file|
+                profile_files.push(profile_file.strip)
               end
+              inst_data[:profiles] = profile_files
+
+              # Complete the entry
+              sid_instances[instnum.strip] = inst_data
             end
           end
           sid_detail[:instances] = sid_instances
 
           # Check for a database instance
           if Dir.exist?('/db2/' + sid)
-            sid_instances[:database] = 'db2'
+            inst_data = {}
+            inst_data[:type] = 'db2'
+            sid_instances[:database] = inst_data
           end
           sid_hash[sid] = sid_detail
         end

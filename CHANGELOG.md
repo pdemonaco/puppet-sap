@@ -17,6 +17,10 @@ All notable changes to this project will be documented in this file.
 * Added a top-level configuration of SID string replacement patterns
 * Added support for managing NFS mounts 
 * Includes required packages for db2 10.5
+* Updated the sap facts to be a structure which includes the following detail
+  * `sid_hash` - Local SIDs in a hash containing entries for each instance with the number as the key 
+    * `type` - the kind of instance this number is
+    * `profiles` - an array of all profile files located in `/sapmnt/SID/profile/` which belong to this instance
 
 **Bugfixes**
 * Expanded the yum groups to actual package names to avoid constant service restarts

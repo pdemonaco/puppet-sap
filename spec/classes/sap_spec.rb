@@ -83,6 +83,27 @@ describe 'sap', type: :class do
     end
 
     context "on #{os} full config" do
+      let(:params) do
+        {
+          system_ids: ['EP0'],
+          enabled_components: [
+            'base',
+            'base_extended',
+            'experimental',
+            'ads',
+            'bo',
+            'cloudconnector',
+            'hana',
+            'router',
+          ],
+          router_oss_realm: 'p:CN=sr.domain.tld, OU=0123456789, OU=SAProuter, O=SAP, C=DE',
+          router_rules: [
+            'P0,1  *  192.168.1.1  3200  password  # SID dispatcher',
+            'P0,1  *  192.168.1.2  3200  password  # SID dispatcher',
+          ],
+          distro_text: 'Best distribution ever build version 7.2',
+        }
+      end
       let(:facts) do
         facts.merge(
           page_size: 4096,
@@ -124,28 +145,6 @@ describe 'sap', type: :class do
           )
         end
 
-      end
-
-      let(:params) do
-        {
-          system_ids: ['EP0'],
-          enabled_components: [
-            'base',
-            'base_extended',
-            'experimental',
-            'ads',
-            'bo',
-            'cloudconnector',
-            'hana',
-            'router',
-          ],
-          router_oss_realm: 'p:CN=sr.domain.tld, OU=0123456789, OU=SAProuter, O=SAP, C=DE',
-          router_rules: [
-            'P0,1  *  192.168.1.1  3200  password  # SID dispatcher',
-            'P0,1  *  192.168.1.2  3200  password  # SID dispatcher',
-          ],
-          distro_text: 'Best distribution ever build version 7.2',
-        }
       end
 
       it { is_expected.to compile.with_all_deps }
@@ -503,7 +502,7 @@ describe 'sap', type: :class do
       },
     ],
   }
-  
+
   on_supported_os(test_on).each do |os, facts|
     context "on #{os} nfsv4 sapmnt with nfs management" do
       let(:facts) do
@@ -537,7 +536,7 @@ describe 'sap', type: :class do
           manage_mount_dependencies: true,
           mount_points: {
             common: {
-              '/sapmnt': {
+              '/sapmnt' => {
                 per_sid: false,
                 file_params: {
                   owner: 'root',
@@ -545,7 +544,7 @@ describe 'sap', type: :class do
                   mode: '0755',
                 },
               },
-              '/sapmnt/_SID_': {
+              '/sapmnt/_SID_' => {
                 per_sid: true,
                 file_params: {
                   owner: '_sid_adm',
@@ -564,7 +563,7 @@ describe 'sap', type: :class do
               },
             },
             base: {
-              '/usr/sap': {
+              '/usr/sap' => {
                 per_sid: false,
                 file_params: {
                   owner: 'root',
@@ -572,7 +571,7 @@ describe 'sap', type: :class do
                   mode: '0755',
                 },
               },
-              '/usr/sap/trans': {
+              '/usr/sap/trans' => {
                 per_sid: false,
                 file_params: {
                   owner: 'root',
@@ -589,7 +588,7 @@ describe 'sap', type: :class do
                   '/usr/sap',
                 ],
               },
-              '/usr/sap/_SID_': {
+              '/usr/sap/_SID_' => {
                 per_sid: true,
                 file_params: {
                   owner: '_sid_adm',
@@ -791,7 +790,7 @@ describe 'sap', type: :class do
           create_mount_points: true,
           mount_points: {
             db2: {
-              '/db2/Missing/per_sid': {
+              '/db2/Missing/per_sid' => {
               },
             },
           },
@@ -825,7 +824,7 @@ describe 'sap', type: :class do
           create_mount_points: true,
           mount_points: {
             db2: {
-              '/db2/Missing/file_params': {
+              '/db2/Missing/file_params' => {
                 per_sid: false,
               },
             },
@@ -860,7 +859,7 @@ describe 'sap', type: :class do
           create_mount_points: true,
           mount_points: {
             db2: {
-              '/db2/Missing/pattern': {
+              '/db2/Missing/pattern' => {
                 per_sid: true,
                 file_params: {
                   owner: 'db2_sid_',
@@ -900,7 +899,7 @@ describe 'sap', type: :class do
           create_mount_points: true,
           mount_points: {
             db2: {
-              '/db2/Missing/count_pattern': {
+              '/db2/Missing/count_pattern' => {
                 per_sid: true,
                 count: 4,
                 file_params: {
@@ -941,7 +940,7 @@ describe 'sap', type: :class do
           create_mount_points: true,
           mount_points: {
             db2: {
-              '/db2/bad/count_N_': {
+              '/db2/bad/count_N_' => {
                 per_sid: true,
                 count: 0,
                 file_params: {
@@ -982,7 +981,7 @@ describe 'sap', type: :class do
           create_mount_points: true,
         }
       end
-      
+
       # Ensure we included the mountpoint class
       it {
         is_expected.to contain_class('sap::config')

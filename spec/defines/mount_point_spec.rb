@@ -19,7 +19,7 @@ describe 'sap::config::mount_point' do
 
     it { is_expected.to compile.with_all_deps.and_raise_error(%r{mount_point: missing mount type for path '#{title}'!}) }
   end
-  
+
   context 'invalid mount type' do
     let(:title) { '/bad/type' }
     let(:params) do
@@ -215,7 +215,7 @@ describe 'sap::config::mount_point' do
   }
 
   on_supported_os(test_on).each do |os, facts|
-    context 'sid specific nfs mount' do
+    context "on os #{os} sid specific nfs mount" do
       let(:title) { '/sapmnt/_SID_' }
       let(:facts) { facts }
       let(:params) do
@@ -237,19 +237,19 @@ describe 'sap::config::mount_point' do
           },
           mount_defaults: {
             nfsv4: {
-              options: 'rw,soft,noac,timeo=200,retans=3,proto=tcp'
-            }
+              options: 'rw,soft,noac,timeo=200,retans=3,proto=tcp',
+            },
           },
         }
       end
-      let(:pre_condition) { '
-        class { nfs:
+      let(:pre_condition) do
+        'class { nfs:
           server_enabled => false,
           client_enabled => true,
           nfs_v4_client => true,
           nfs_v4_idmap_domain => "example.com",
         }'
-      }
+      end
 
       it { is_expected.to compile.with_all_deps }
 
