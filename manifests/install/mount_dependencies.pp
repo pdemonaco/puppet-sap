@@ -10,4 +10,5 @@ class sap::install::mount_dependencies {
     nfs_v4_client       => true,
     nfs_v4_idmap_domain => $sap::params::config_default_mount_options['nfsv4']['idmap_domain'],
   }
+  contain 'nfs'
 }
