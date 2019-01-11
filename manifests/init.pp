@@ -3,12 +3,12 @@
 #
 # @summary Installs prerequisites for an SAP environment on RedHat derivatives
 #
-# @param system_ids [Array[Pattern[/^[A-Z0-9]{3}$/]]]
+# @param system_ids [Array[Sap::SID]]]
 #   An array of SAP system IDs (SIDs) which will be present on the target host.
 #   Note that each entry must be exactly 3 characters in length and contain
 #   exclusively uppercase characters.
 #
-# @param enabled_components [Array[Enum]]
+# @param enabled_components [Array[Sap::SapComponents]]
 #   List of components which will be present on the target system. Note that
 #   this is an enum which includes the following valid options:
 #   * `base`: SAP ABAP, JAVA stack, SAP ADS or SAP BO is used
@@ -55,9 +55,8 @@
 # Copyright 2016 Thomas Bendler
 #
 class sap (
-  Array[Pattern[/^[A-Z0-9]{3}$/]] $system_ids = [],
-  Array[Enum['base', 'base_extended', 'experimental', 'ads', 'bo',
-  'cloudconnector', 'hana', 'router', 'db2']] $enabled_components = ['base'],
+  Array[Sap::SID] $system_ids = [],
+  Array[Sap::SapComponents] $enabled_components = ['base'],
   Boolean $create_mount_points = false,
   Hash[Enum['common', 'base', 'db2'], Hash] $mount_points = {},
   Boolean $manage_mount_dependencies = false,
