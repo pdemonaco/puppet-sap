@@ -174,114 +174,114 @@ describe 'sap', type: :class do
       end
 
       # Common packages
-      it { is_expected.to contain_package('uuidd').with_ensure('installed') }
+      it { is_expected.to contain_package('uuidd').with_ensure('present') }
 
       # SAP Base packages
-      it { is_expected.to contain_package('compat-libstdc++-33').with_ensure('installed') }
-      it { is_expected.to contain_package('elfutils-libelf-devel').with_ensure('installed') }
-      it { is_expected.to contain_package('gcc-c++').with_ensure('installed') }
-      it { is_expected.to contain_package('glibc').with_ensure('installed') }
-      it { is_expected.to contain_package('glibc-devel').with_ensure('installed') }
-      it { is_expected.to contain_package('glibc-headers').with_ensure('installed') }
-      it { is_expected.to contain_package('libaio').with_ensure('installed') }
-      it { is_expected.to contain_package('libaio-devel').with_ensure('installed') }
-      it { is_expected.to contain_package('libstdc++').with_ensure('installed') }
-      it { is_expected.to contain_package('libstdc++-devel').with_ensure('installed') }
-      it { is_expected.to contain_package('tcsh').with_ensure('installed') }
-      it { is_expected.to contain_package('xorg-x11-utils').with_ensure('installed') }
+      it { is_expected.to contain_package('compat-libstdc++-33').with_ensure('present') }
+      it { is_expected.to contain_package('elfutils-libelf-devel').with_ensure('present') }
+      it { is_expected.to contain_package('gcc-c++').with_ensure('present') }
+      it { is_expected.to contain_package('glibc').with_ensure('present') }
+      it { is_expected.to contain_package('glibc-devel').with_ensure('present') }
+      it { is_expected.to contain_package('glibc-headers').with_ensure('present') }
+      it { is_expected.to contain_package('libaio').with_ensure('present') }
+      it { is_expected.to contain_package('libaio-devel').with_ensure('present') }
+      it { is_expected.to contain_package('libstdc++').with_ensure('present') }
+      it { is_expected.to contain_package('libstdc++-devel').with_ensure('present') }
+      it { is_expected.to contain_package('tcsh').with_ensure('present') }
+      it { is_expected.to contain_package('xorg-x11-utils').with_ensure('present') }
 
       # SAP Base extensions packages
-      it { is_expected.to contain_package('expat').with_ensure('installed') }
-      it { is_expected.to contain_package('libgcc').with_ensure('installed') }
-      it { is_expected.to contain_package('libX11').with_ensure('installed') }
-      it { is_expected.to contain_package('libXau').with_ensure('installed') }
-      it { is_expected.to contain_package('libxcb').with_ensure('installed') }
-      it { is_expected.to contain_package('krb5-libs').with_ensure('installed') }
+      it { is_expected.to contain_package('expat').with_ensure('present') }
+      it { is_expected.to contain_package('libgcc').with_ensure('present') }
+      it { is_expected.to contain_package('libX11').with_ensure('present') }
+      it { is_expected.to contain_package('libXau').with_ensure('present') }
+      it { is_expected.to contain_package('libxcb').with_ensure('present') }
+      it { is_expected.to contain_package('krb5-libs').with_ensure('present') }
       if facts[:architecture] == 'x86_64'
-        it { is_expected.to contain_package('glibc.i686').with_ensure('installed') }
-        it { is_expected.to contain_package('glibc-devel.i686').with_ensure('installed') }
-        it { is_expected.to contain_package('libgcc.i686').with_ensure('installed') }
-        it { is_expected.to contain_package('libX11.i686').with_ensure('installed') }
-        it { is_expected.to contain_package('libXau.i686').with_ensure('installed') }
-        it { is_expected.to contain_package('libxcb.i686').with_ensure('installed') }
+        it { is_expected.to contain_package('glibc.i686').with_ensure('present') }
+        it { is_expected.to contain_package('glibc-devel.i686').with_ensure('present') }
+        it { is_expected.to contain_package('libgcc.i686').with_ensure('present') }
+        it { is_expected.to contain_package('libX11.i686').with_ensure('present') }
+        it { is_expected.to contain_package('libXau.i686').with_ensure('present') }
+        it { is_expected.to contain_package('libxcb.i686').with_ensure('present') }
       end
 
       # Experimental packages
-      it { is_expected.to contain_package('sap-common').with_ensure('installed') }
-      it { is_expected.to contain_package('sap-toolbox').with_ensure('installed') }
-      it { is_expected.to contain_package('sap-sapcar').with_ensure('installed') }
+      it { is_expected.to contain_package('sap-common').with_ensure('present') }
+      it { is_expected.to contain_package('sap-toolbox').with_ensure('present') }
+      it { is_expected.to contain_package('sap-sapcar').with_ensure('present') }
 
       # SAP ADS packages
-      it { is_expected.to contain_package('autoconf').with_ensure('installed') }
-      it { is_expected.to contain_package('automake').with_ensure('installed') }
-      it { is_expected.to contain_package('transfig').with_ensure('installed') }
-      it { is_expected.to contain_package('cyrus-sasl-lib').with_ensure('installed') }
-      it { is_expected.to contain_package('fontconfig').with_ensure('installed') }
-      it { is_expected.to contain_package('freetype').with_ensure('installed') }
-      it { is_expected.to contain_package('keyutils-libs').with_ensure('installed') }
-      it { is_expected.to contain_package('libcom_err').with_ensure('installed') }
-      it { is_expected.to contain_package('libidn').with_ensure('installed') }
-      it { is_expected.to contain_package('libidn-devel').with_ensure('installed') }
-      it { is_expected.to contain_package('libselinux').with_ensure('installed') }
-      it { is_expected.to contain_package('nspr').with_ensure('installed') }
-      it { is_expected.to contain_package('nss').with_ensure('installed') }
-      it { is_expected.to contain_package('nss-softokn').with_ensure('installed') }
-      it { is_expected.to contain_package('nss-softokn-freebl').with_ensure('installed') }
-      it { is_expected.to contain_package('nss-util').with_ensure('installed') }
-      it { is_expected.to contain_package('openldap').with_ensure('installed') }
-      it { is_expected.to contain_package('zlib').with_ensure('installed') }
+      it { is_expected.to contain_package('autoconf').with_ensure('present') }
+      it { is_expected.to contain_package('automake').with_ensure('present') }
+      it { is_expected.to contain_package('transfig').with_ensure('present') }
+      it { is_expected.to contain_package('cyrus-sasl-lib').with_ensure('present') }
+      it { is_expected.to contain_package('fontconfig').with_ensure('present') }
+      it { is_expected.to contain_package('freetype').with_ensure('present') }
+      it { is_expected.to contain_package('keyutils-libs').with_ensure('present') }
+      it { is_expected.to contain_package('libcom_err').with_ensure('present') }
+      it { is_expected.to contain_package('libidn').with_ensure('present') }
+      it { is_expected.to contain_package('libidn-devel').with_ensure('present') }
+      it { is_expected.to contain_package('libselinux').with_ensure('present') }
+      it { is_expected.to contain_package('nspr').with_ensure('present') }
+      it { is_expected.to contain_package('nss').with_ensure('present') }
+      it { is_expected.to contain_package('nss-softokn').with_ensure('present') }
+      it { is_expected.to contain_package('nss-softokn-freebl').with_ensure('present') }
+      it { is_expected.to contain_package('nss-util').with_ensure('present') }
+      it { is_expected.to contain_package('openldap').with_ensure('present') }
+      it { is_expected.to contain_package('zlib').with_ensure('present') }
       if facts[:architecture] == 'x86_64'
-        it { is_expected.to contain_package('nss-softokn-freebl.i686').with_ensure('installed') }
+        it { is_expected.to contain_package('nss-softokn-freebl.i686').with_ensure('present') }
       end
 
       # These packages are only supported on RHEL 7
       if facts[:operatingsystemmajrelease] == '7'
         # SAP BO packges
-        it { is_expected.to contain_package('libXcursor').with_ensure('installed') }
-        it { is_expected.to contain_package('libXext').with_ensure('installed') }
-        it { is_expected.to contain_package('libXfixes').with_ensure('installed') }
-        it { is_expected.to contain_package('libXrender').with_ensure('installed') }
+        it { is_expected.to contain_package('libXcursor').with_ensure('present') }
+        it { is_expected.to contain_package('libXext').with_ensure('present') }
+        it { is_expected.to contain_package('libXfixes').with_ensure('present') }
+        it { is_expected.to contain_package('libXrender').with_ensure('present') }
         if facts[:architecture] == 'x86_64'
-          it { is_expected.to contain_package('compat-libstdc++-33.i686').with_ensure('installed') }
-          it { is_expected.to contain_package('libstdc++.i686').with_ensure('installed') }
-          it { is_expected.to contain_package('libXcursor.i686').with_ensure('installed') }
-          it { is_expected.to contain_package('libXext.i686').with_ensure('installed') }
-          it { is_expected.to contain_package('libXfixes.i686').with_ensure('installed') }
-          it { is_expected.to contain_package('libXrender.i686').with_ensure('installed') }
+          it { is_expected.to contain_package('compat-libstdc++-33.i686').with_ensure('present') }
+          it { is_expected.to contain_package('libstdc++.i686').with_ensure('present') }
+          it { is_expected.to contain_package('libXcursor.i686').with_ensure('present') }
+          it { is_expected.to contain_package('libXext.i686').with_ensure('present') }
+          it { is_expected.to contain_package('libXfixes.i686').with_ensure('present') }
+          it { is_expected.to contain_package('libXrender.i686').with_ensure('present') }
         end
 
         # SAP Cloud connector packages
-        it { is_expected.to contain_package('sapjvm_8').with_ensure('installed') }
-        it { is_expected.to contain_package('com.sap.scc-ui').with_ensure('installed') }
+        it { is_expected.to contain_package('sapjvm_8').with_ensure('present') }
+        it { is_expected.to contain_package('com.sap.scc-ui').with_ensure('present') }
 
         # SAP HANA packages
-        it { is_expected.to contain_package('PackageKit-gtk3-module').with_ensure('installed') }
-        it { is_expected.to contain_package('bind-utils').with_ensure('installed') }
-        it { is_expected.to contain_package('cairo').with_ensure('installed') }
-        it { is_expected.to contain_package('expect').with_ensure('installed') }
-        it { is_expected.to contain_package('graphviz').with_ensure('installed') }
-        it { is_expected.to contain_package('gtk2').with_ensure('installed') }
-        it { is_expected.to contain_package('iptraf-ng').with_ensure('installed') }
-        it { is_expected.to contain_package('java-1.8.0-openjdk').with_ensure('installed') }
-        it { is_expected.to contain_package('krb5-workstation').with_ensure('installed') }
-        it { is_expected.to contain_package('libcanberra-gtk2').with_ensure('installed') }
-        it { is_expected.to contain_package('libicu').with_ensure('installed') }
-        it { is_expected.to contain_package('libpng12').with_ensure('installed') }
-        it { is_expected.to contain_package('libssh2').with_ensure('installed') }
-        it { is_expected.to contain_package('libtool-ltdl').with_ensure('installed') }
-        it { is_expected.to contain_package('net-tools').with_ensure('installed') }
-        it { is_expected.to contain_package('numactl').with_ensure('installed') }
-        it { is_expected.to contain_package('openssl098e').with_ensure('installed') }
-        it { is_expected.to contain_package('openssl').with_ensure('installed') }
-        it { is_expected.to contain_package('xfsprogs').with_ensure('installed') }
-        it { is_expected.to contain_package('xulrunner').with_ensure('installed') }
+        it { is_expected.to contain_package('PackageKit-gtk3-module').with_ensure('present') }
+        it { is_expected.to contain_package('bind-utils').with_ensure('present') }
+        it { is_expected.to contain_package('cairo').with_ensure('present') }
+        it { is_expected.to contain_package('expect').with_ensure('present') }
+        it { is_expected.to contain_package('graphviz').with_ensure('present') }
+        it { is_expected.to contain_package('gtk2').with_ensure('present') }
+        it { is_expected.to contain_package('iptraf-ng').with_ensure('present') }
+        it { is_expected.to contain_package('java-1.8.0-openjdk').with_ensure('present') }
+        it { is_expected.to contain_package('krb5-workstation').with_ensure('present') }
+        it { is_expected.to contain_package('libcanberra-gtk2').with_ensure('present') }
+        it { is_expected.to contain_package('libicu').with_ensure('present') }
+        it { is_expected.to contain_package('libpng12').with_ensure('present') }
+        it { is_expected.to contain_package('libssh2').with_ensure('present') }
+        it { is_expected.to contain_package('libtool-ltdl').with_ensure('present') }
+        it { is_expected.to contain_package('net-tools').with_ensure('present') }
+        it { is_expected.to contain_package('numactl').with_ensure('present') }
+        it { is_expected.to contain_package('openssl098e').with_ensure('present') }
+        it { is_expected.to contain_package('openssl').with_ensure('present') }
+        it { is_expected.to contain_package('xfsprogs').with_ensure('present') }
+        it { is_expected.to contain_package('xulrunner').with_ensure('present') }
 
         # SAP cloudconnector service
         it { is_expected.to contain_service('scc_daemon').with('ensure' => 'running', 'enable' => 'true') }
       end
 
       # SAP router package
-      it { is_expected.to contain_package('sap-router').with_ensure('installed') }
+      it { is_expected.to contain_package('sap-router').with_ensure('present') }
 
       # SAP Linux configuration
       if facts[:operatingsystemmajrelease] == '7'
@@ -368,26 +368,26 @@ describe 'sap', type: :class do
       when 'RedHat'
         case facts[:operatingsystemmajrelease]
         when '6'
-          it { is_expected.to contain_package('compat-gcc-34').with_ensure('installed') }
-          it { is_expected.to contain_package('pdksh').with_ensure('installed') }
+          it { is_expected.to contain_package('compat-gcc-34').with_ensure('present') }
+          it { is_expected.to contain_package('pdksh').with_ensure('present') }
         end
       when 'CentOS'
         case facts[:operatingsystemmajrelease]
         when '6'
-          it { is_expected.to contain_package('compat-gcc-34').with_ensure('installed') }
-          it { is_expected.to contain_package('pdksh').with_ensure('installed') }
+          it { is_expected.to contain_package('compat-gcc-34').with_ensure('present') }
+          it { is_expected.to contain_package('pdksh').with_ensure('present') }
         end
       when 'Scientific'
         case facts[:operatingsystemmajrelease]
         when '6'
-          it { is_expected.to contain_package('compat-gcc-34').with_ensure('installed') }
-          it { is_expected.to contain_package('pdksh').with_ensure('installed') }
+          it { is_expected.to contain_package('compat-gcc-34').with_ensure('present') }
+          it { is_expected.to contain_package('pdksh').with_ensure('present') }
         end
       when 'OracleLinux'
         case facts[:operatingsystemmajrelease]
         when '6'
-          it { is_expected.to contain_package('compat-gcc-34').with_ensure('installed') }
-          it { is_expected.to contain_package('pdksh').with_ensure('installed') }
+          it { is_expected.to contain_package('compat-gcc-34').with_ensure('present') }
+          it { is_expected.to contain_package('pdksh').with_ensure('present') }
         end
       else
         it { is_expected.to contain_warning('The current operating system is not supported!') }
@@ -990,12 +990,12 @@ describe 'sap', type: :class do
 
       # Ensure DB2 packages are present
       it {
-        is_expected.to contain_package('libaio').with_ensure('installed')
-        is_expected.to contain_package('ksh').with_ensure('installed')
+        is_expected.to contain_package('libaio').with_ensure('present')
+        is_expected.to contain_package('ksh').with_ensure('present')
       }
       if facts[:architecture] == 'ppc64'
         it {
-          is_expected.to contain_package('vacpp.rte').with_ensure('installed')
+          is_expected.to contain_package('vacpp.rte').with_ensure('present')
         }
       end
 

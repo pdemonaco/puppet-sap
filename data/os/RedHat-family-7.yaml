@@ -139,3 +139,8 @@ sap::params::config_limits:
         fsize:
           type: 'both'
           value: 'unlimited'
+
+# Cluster Packages
+sap::cluster::prepare::packages:
+  - 'resource-agents'
+  - 'resource-agents-sap'

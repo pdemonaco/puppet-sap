@@ -10,11 +10,7 @@ define sap::install::package_set (
   Array[String] $package_list = []
 ) {
   unless(empty($package_list)) {
-    $package_list.each | $package_name | {
-      package { $package_name:
-        ensure => installed
-      }
-    }
+    ensure_packages($package_list, {'ensure' => 'installed'})
   } else {
     warning("No ${title} packages were specified!")
   }
