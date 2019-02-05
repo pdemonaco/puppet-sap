@@ -24,11 +24,7 @@ class sap::cluster::prepare (
 
   # Deploy the packages if they are provided
   unless(empty($packages)) {
-    $packages.each | $package | {
-      package { $package:
-        ensure => 'installed',
-      }
-    }
+    ensure_packages($packages, {'ensure' => 'installed'})
   } else {
     warning('sap-cluster-prepare: no packages were provided!')
   }
