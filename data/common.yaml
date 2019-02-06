@@ -167,6 +167,17 @@ sap::mount_points:
         mode: '0750'
       required_files:
         - '/db2/_SID_'
+    '/db2/_SID_/saptmp_N_':
+      per_sid: true
+      mount_params:
+        managed: false
+      count: 4
+      file_params:
+        owner: 'db2_sid_'
+        group: 'db_sid_adm'
+        mode: '0750'
+      required_files:
+        - '/db2/_SID_'
 
 # Default Parameters for supported mount types
 sap::params::config_default_mount_options:

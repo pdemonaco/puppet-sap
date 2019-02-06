@@ -1032,7 +1032,7 @@ describe 'sap', type: :class do
       }
 
       # Ensure the DB2 directories are created for both EP0 and EP1
-      it {
+      it 'creates the database mount points' do
         # Base db2
         is_expected.to contain_file('/db2').with(
           ensure: 'directory',
@@ -1163,7 +1163,60 @@ describe 'sap', type: :class do
           group: 'dbep1adm',
           mode: '0750',
         ).that_requires('File[/db2/EP1]')
-      }
+
+        # Temp Directories
+        is_expected.to contain_file('/db2/EP0/saptmp1').with(
+          ensure: 'directory',
+          owner: 'db2ep0',
+          group: 'dbep0adm',
+          mode: '0750',
+        ).that_requires('File[/db2/EP0]')
+        is_expected.to contain_file('/db2/EP1/saptmp1').with(
+          ensure: 'directory',
+          owner: 'db2ep1',
+          group: 'dbep1adm',
+          mode: '0750',
+        ).that_requires('File[/db2/EP1]')
+
+        is_expected.to contain_file('/db2/EP0/saptmp2').with(
+          ensure: 'directory',
+          owner: 'db2ep0',
+          group: 'dbep0adm',
+          mode: '0750',
+        ).that_requires('File[/db2/EP0]')
+        is_expected.to contain_file('/db2/EP1/saptmp2').with(
+          ensure: 'directory',
+          owner: 'db2ep1',
+          group: 'dbep1adm',
+          mode: '0750',
+        ).that_requires('File[/db2/EP1]')
+
+        is_expected.to contain_file('/db2/EP0/saptmp3').with(
+          ensure: 'directory',
+          owner: 'db2ep0',
+          group: 'dbep0adm',
+          mode: '0750',
+        ).that_requires('File[/db2/EP0]')
+        is_expected.to contain_file('/db2/EP1/saptmp3').with(
+          ensure: 'directory',
+          owner: 'db2ep1',
+          group: 'dbep1adm',
+          mode: '0750',
+        ).that_requires('File[/db2/EP1]')
+
+        is_expected.to contain_file('/db2/EP0/saptmp4').with(
+          ensure: 'directory',
+          owner: 'db2ep0',
+          group: 'dbep0adm',
+          mode: '0750',
+        ).that_requires('File[/db2/EP0]')
+        is_expected.to contain_file('/db2/EP1/saptmp4').with(
+          ensure: 'directory',
+          owner: 'db2ep1',
+          group: 'dbep1adm',
+          mode: '0750',
+        ).that_requires('File[/db2/EP1]')
+      end
     end
   end
 end
