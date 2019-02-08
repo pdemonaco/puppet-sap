@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe 'sap', type: :class do
-
   context 'on RedHat family' do
     let(:facts) do
       {
@@ -81,9 +80,10 @@ describe 'sap', type: :class do
     end
   end
 
-  on_supported_os.each do | os, facts |
+  on_supported_os.each do |os, facts|
     context "on #{os}" do
       let(:facts) { facts }
+
       before(:each) do
         facts.merge!(
           page_size: 4096,
@@ -101,7 +101,7 @@ describe 'sap', type: :class do
             },
           },
         )
-        
+
         case facts[:operatingsystemmajrelease]
         when '6'
           facts[:os].merge!(
@@ -721,9 +721,10 @@ describe 'sap', type: :class do
       },
     ],
   }
-  on_supported_os(test_on).each do | os, facts |
+  on_supported_os(test_on).each do |os, facts|
     context "db2 on #{os}" do
       let(:facts) { facts }
+
       before(:each) do
         facts.merge!(
           page_size: 4_096,
@@ -949,15 +950,8 @@ describe 'sap', type: :class do
                 release: {
                   full: '7.5',
                   major: '7',
-                  minor: '5'
+                  minor: '5',
                 },
-                selinux: {
-                  config_mode: 'permissive',
-                  current_mode: 'permissive',
-                  enabled: true,
-                  enforced: false,
-                  policy_version: '31'
-                }
               },
             )
           end
@@ -968,8 +962,7 @@ describe 'sap', type: :class do
           end
         end
 
-        # Ensure the common directories exist
-        it {
+        it 'ensure that the common directories are created' do
           is_expected.to contain_file('/sapmnt').with(
             ensure: 'directory',
             owner: 'root',
@@ -990,15 +983,15 @@ describe 'sap', type: :class do
             group: 'sapsys',
             mode: '0755',
           ).that_requires('File[/sapmnt]')
-        }
+        end
 
         # Ensure that the application server directories are absent
-        it {
+        it 'ensure there are no appserver directories' do
           is_expected.not_to contain_file('/usr/sap')
           is_expected.not_to contain_file('/usr/sap/EP0')
           is_expected.not_to contain_file('/usr/sap/EP1')
           is_expected.not_to contain_file('/usr/sap/trans')
-        }
+        end
 
         # Ensure the DB2 directories are created for both EP0 and EP1
         it 'creates the database mount points' do

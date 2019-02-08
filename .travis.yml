@@ -1,49 +1,46 @@
-sudo: required
+---
+sudo: false
 dist: trusty
-services: docker
 language: ruby
 cache: bundler
-bundler_args: "--without system_tests"
 before_install:
-- rm Gemfile.lock || true
-- gem update --system
-- gem update bundler
-- gem --version
-- bundle --version
-stages:
-- test
-- acceptance
-- deploy
+  - bundle -v
+  - rm -f Gemfile.lock
+  - gem update --system
+  - gem --version
+  - bundle -v
 script:
-- bundle exec rake $CHECK
+  - 'bundle exec rake $CHECK'
+bundler_args: --without system_tests
+rvm:
+  - 2.5.1
+env:
+  global:
+    - BEAKER_PUPPET_COLLECTION=puppet6 PUPPET_GEM_VERSION="~> 6.0"
 matrix:
   fast_finish: true
   include:
-  - rvm: 2.3.1
-    env: PUPPET_VERSION="~> 4.0" CHECK=test
-    stage: test
-  - rvm: default
-    env: PUPPET_VERSION="~> 5.0" CHECK=test
-    stage: test
-  - rvm: default
-    bundler_args: ''
-    env: BEAKER_set=centos-7-x64 BEAKER_debug=1 PUPPET_INSTALL_TYPE=agent CHECK=beaker
-    stage: acceptance
-  - rvm: default
-    env: PUPPET_VERSION="~> 5.0" DEPLOY_TO_FORGE=yes
-    stage: deploy
+    -
+      env: CHECK="syntax lint metadata_lint check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop"
+    -
+      env: CHECK=parallel_spec
+    -
+      env: PUPPET_GEM_VERSION="~> 5.0" CHECK=parallel_spec
+      rvm: 2.4.4
+    -
+      env: PUPPET_GEM_VERSION="~> 4.0" CHECK=parallel_spec
+      rvm: 2.1.9
 branches:
   only:
-  - master
-  - "/^v\\d/"
+    - master
+    - /^v\d/
 notifications:
-  email:
-  - project@bendler-net.de
+  email: false
 deploy:
   provider: puppetforge
-  user: thbe
+  user: puppet
   password:
-    secure: jkeY46Y3L6OABzNfSos6GmvhfWENN19IzLL021KfgiVQFLYKgy5YHvEpITGoy6pGdz4IEgztFfLvhHo81xIBPWXvQQS8TWuXtTVAL3s3rN5xzkFF17DE5abtSmp2sKXK7SI6cXq+lTAftztmw9z32exJxwICKYtkb6tzf07XA5y1JmErhzyJ223srBDBFN7WBD6vzeSIQ7aFckjcOyeOmuUVV7jenTfKSUHOyoqJWmkuRcUFhXAvkLGIc1D6x+nHp/hUN9S3YsCwX8CSnFXiZBm4U0tevS3ELciUzEl/stoJ39Vj8MOhLeFssRHVBRCjistm2nEqJOnJe67pI5w9Rl3CEOf5jkUf33eSDg9Rep+bledKQe7k9i6wWy9rzF6xt1SdKrPgLKrbSTonNF5OYLBDt0BHRooe8sxu+jvAquPqpZ3cVsolfwLzeuW6dP8xWrMIvvX6W46vYrFawWoCbu7DRhD/EK5aH0I97yoMVi/2H7aGGRdRJlI8drZK6W8cRHSfdPhz4JYPW7QbH6radqxhbA39sxUi3iC+Vzkrb9chMAH4REZpeu4kiTotrWsKNNG2w8+fx/3dHOUFS31UFjU2DYEzBrmp+VC5L9lBuaR9440oJthG1dXrlZpq3uuqfleO89AXUdbFg9fe+jhdYkVHtN/mI/NV7oVoTIKNCOk=
+    secure: ""
   on:
     tags: true
     all_branches: true

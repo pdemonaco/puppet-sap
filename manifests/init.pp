@@ -43,7 +43,7 @@
 # @param distro_text [Optional[String]]
 #   Modify text in /etc/redhat-release
 #
-# @param backend_database [Array[Sap::BackendDatabase]]
+# @param backend_databases [Array[Sap::BackendDatabase]]
 #   List of backend database types this SAP instance will connect to. Note that
 #   multiple backends are possible for systems such as SCM which connect to both
 #   a standard backend (e.g. Oracle/DB2) and LiveCache. Note that this field is

@@ -6,6 +6,8 @@
 **Classes**
 
 * [`sap`](#sap): Installs prerequisites for an SAP environment on RedHat derivatives
+* [`sap::cluster`](#sapcluster): Configures a node with the appropriate SAP cluster resources
+* [`sap::cluster::prepare`](#sapclusterprepare): Ensure local SAP configuration is ready for a clustered environment
 * [`sap::config`](#sapconfig): Private class used to control configuration file deployment.
 * [`sap::config::common`](#sapconfigcommon): Trick SAP into thinking this host is running a supported RHEL
 * [`sap::config::limits`](#sapconfiglimits): Generates an etc limits file for each relevant enabled component.
@@ -56,8 +58,9 @@ The following parameters are available in the `sap` class.
 
 ##### `system_ids`
 
-Data type: `Array[Pattern[/^[A-Z0-9]{3}$/]]`
+Data type: `Array[Sap::SID]`
 
+]
 An array of SAP system IDs (SIDs) which will be present on the target host.
 Note that each entry must be exactly 3 characters in length and contain
 exclusively uppercase characters.
@@ -66,8 +69,7 @@ Default value: []
 
 ##### `enabled_components`
 
-Data type: `Array[Enum['base', 'base_extended', 'experimental', 'ads', 'bo',
-  'cloudconnector', 'hana', 'router', 'db2']]`
+Data type: `Array[Sap::SapComponents]`
 
 List of components which will be present on the target system. Note that
 this is an enum which includes the following valid options:
@@ -134,6 +136,63 @@ Data type: `Optional[String]`
 Modify text in /etc/redhat-release
 
 Default value: `undef`
+
+##### `backend_database`
+
+Data type: `Array[Sap::BackendDatabase]`
+
+List of backend database types this SAP instance will connect to. Note that
+multiple backends are possible for systems such as SCM which connect to both
+a standard backend (e.g. Oracle/DB2) and LiveCache. Note that this field is
+mandatory if the 'base' component is enabled on a node.
+
+##### `backend_databases`
+
+Data type: `Array[Sap::BackendDatabase]`
+
+
+
+Default value: []
+
+### sap::cluster
+
+Configures a node with the appropriate SAP cluster resources
+
+#### Parameters
+
+The following parameters are available in the `sap::cluster` class.
+
+##### `rules`
+
+Data type: `Sap::SIDClusterData`
+
+
+
+Default value: {}
+
+### sap::cluster::prepare
+
+Simple class which prepares the config files on this machine for a
+high-availability configuration of SAP. There are currently two components to
+this process: 1) the profile files in /sapmnt/<SID> corresponding to this
+machine are updated replacing entries for Restart_Program with Start_Program.
+2) All `.sapenv_${HOSTNAME}.(sh|csh)` and other similar host-specific profile
+files are removed so the system will only use the `.sapenv.(sh|csh)` variants.
+
+Configuration is performed entirely based on the values of local 'sap' facts.
+
+#### Parameters
+
+The following parameters are available in the `sap::cluster::prepare` class.
+
+##### `packages`
+
+Data type: `Optional[Array[String]]`
+
+Ensures that the resource agents needed for SAP configuration are installed
+on this system. Note that defaults are provided only for RHEL 7 derivatives.
+
+Default value: []
 
 ### sap::config
 
@@ -271,6 +330,14 @@ Data type: `Array[String]`
 
 Special SAP tools and utilities including sapcar and others... Appears to be
 custom built?
+
+Default value: []
+
+##### `packages_db2`
+
+Data type: `Array[String]`
+
+Extra DB2 package requirements which are included on a per OS basis.
 
 Default value: []
 
@@ -475,6 +542,14 @@ String pattern used to make various components SAP System ID specific. An
 uppercase version of the sid will be inserted where this pattern is found.
 
 Default value: '_SID_'
+
+##### `packages_backend`
+
+Data type: `Hash[Sap::BackendDatabase, Array[String]]`
+
+
+
+Default value: {'db6' => []}
 
 ### sap::service
 
