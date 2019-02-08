@@ -21,3 +21,7 @@ sap::params::packages_bo:
 
 sap::params::packages_db2:
   - 'vacpp.rte'
+
+sap::params::packages_backend:
+  db6:
+    - 'vacpp.rte'

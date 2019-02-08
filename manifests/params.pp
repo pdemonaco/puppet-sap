@@ -106,26 +106,29 @@
 # @param config_sid_upper_pattern [Optional[String]]
 #   String pattern used to make various components SAP System ID specific. An
 #   uppercase version of the sid will be inserted where this pattern is found.
+# 
+# @param packages_backend [Hash[Sap::BackendDatabase, Array[String]]]
 #
 class sap::params (
-  Array[String] $packages_common                        = [],
-  Array[String] $packages_base                          = [],
-  Array[String] $packages_base_extended                 = [],
-  Array[String] $packages_ads                           = [],
-  Array[String] $packages_bo                            = [],
-  Array[String] $packages_hana                          = [],
-  Array[String] $packages_cloudconnector                = [],
-  Array[String] $packages_saprouter                     = [],
-  Array[String] $packages_experimental                  = [],
-  Array[String] $packages_db2                           = [],
-  String $config_redhat_release_conf                    = undef,
-  String $config_saproutetab                            = undef,
-  String $config_saproutetab_template                   = undef,
-  String $config_saprouter_sysconfig                    = undef,
-  String $config_saprouter_sysconfig_template           = undef,
-  String $service_uuidd                                 = undef,
-  String $service_scc                                   = undef,
-  String $service_saprouter                             = undef,
+  Array[String] $packages_common                              = [],
+  Array[String] $packages_base                                = [],
+  Array[String] $packages_base_extended                       = [],
+  Array[String] $packages_ads                                 = [],
+  Array[String] $packages_bo                                  = [],
+  Array[String] $packages_hana                                = [],
+  Array[String] $packages_cloudconnector                      = [],
+  Array[String] $packages_saprouter                           = [],
+  Array[String] $packages_experimental                        = [],
+  Array[String] $packages_db2                                 = [],
+  Hash[Sap::BackendDatabase, Array[String]] $packages_backend = {'db6' => []},
+  String $config_redhat_release_conf                          = undef,
+  String $config_saproutetab                                  = undef,
+  String $config_saproutetab_template                         = undef,
+  String $config_saprouter_sysconfig                          = undef,
+  String $config_saprouter_sysconfig_template                 = undef,
+  String $service_uuidd                                       = undef,
+  String $service_scc                                         = undef,
+  String $service_saprouter                                   = undef,
   Hash[
     String,
     Hash[

@@ -12,6 +12,11 @@ lookup_options:
     merge: 'unique'
   sap::params::packages_hana:
     merge: 'unique'
+  sap::params::packages_backend:
+    merge:
+      strategy: 'deep'
+      knockout_prefix: '--'
+      merge_hash_arrays: true
   sap::params::cloudconnector:
     merge: 'unique'
   sap::params::saprouter:
@@ -19,12 +24,12 @@ lookup_options:
   sap::params::experimental:
     merge: 'unique'
   sap::params::config_sysctl:
-    merge: 
+    merge:
       strategy: 'deep'
       knockout_prefix: '--'
       merge_hash_arrays: true
   sap::params::config_limits:
-    merge: 
+    merge:
       strategy: 'deep'
       knockout_prefix: '--'
       merge_hash_arrays: true
@@ -42,7 +47,7 @@ lookup_options:
 # Hash structure
 #  - key: module
 #  - data: mount_points_hash
-# 
+#
 #
 sap::mount_points:
   common:
@@ -54,7 +59,7 @@ sap::mount_points:
         mode: '0755'
     '/sapmnt/_SID_':
       per_sid: true
-      mount_params: 
+      mount_params:
         managed: false
         type: 'nfsv4'
       file_params:

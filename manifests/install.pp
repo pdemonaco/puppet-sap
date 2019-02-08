@@ -45,6 +45,7 @@ class sap::install {
             sap::install::package_set { 'bo':
               package_list  => $sap::params::packages_bo,
             }
+
           }
           'cloudconnector': {
             sap::install::package_set { 'cloudconnector':
@@ -59,6 +60,17 @@ class sap::install {
           default: {
             fail("Invalid component '${component} - this error should be impossible!")
           }
+        }
+      }
+    }
+  }
+
+  # Install database backend required packages
+  unless(empty($sap::backend_databases)) {
+    $sap::backend_databases.each | $backend | {
+      if $backend in $sap::params::packages_backend {
+        sap::install::package_set { "${backend}_package":
+          package_list => $sap::params::packages_backend[$backend],
         }
       }
     }

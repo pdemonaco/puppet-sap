@@ -41,7 +41,13 @@
 #   Specify array of rules for the SAP router
 #
 # @param distro_text [Optional[String]]
-#   Modify text in /etc/redhat-release 
+#   Modify text in /etc/redhat-release
+#
+# @param backend_database [Array[Sap::BackendDatabase]]
+#   List of backend database types this SAP instance will connect to. Note that
+#   multiple backends are possible for systems such as SCM which connect to both
+#   a standard backend (e.g. Oracle/DB2) and LiveCache. Note that this field is
+#   mandatory if the 'base' component is enabled on a node.
 #
 # @example Application server containing an ADS instance and a Netweaver instance
 #  class { 'sap':
@@ -55,14 +61,15 @@
 # Copyright 2016 Thomas Bendler
 #
 class sap (
-  Array[Sap::SID] $system_ids = [],
-  Array[Sap::SapComponents] $enabled_components = ['base'],
-  Boolean $create_mount_points = false,
+  Array[Sap::SID] $system_ids                             = [],
+  Array[Sap::SapComponents] $enabled_components           = ['base'],
+  Boolean $create_mount_points                            = false,
   Hash[Enum['common', 'base', 'db2'], Hash] $mount_points = {},
-  Boolean $manage_mount_dependencies = false,
-  Optional[String] $router_oss_realm  = undef,
-  Optional[Array[String]] $router_rules = undef,
-  Optional[String] $distro_text = undef
+  Boolean $manage_mount_dependencies                      = false,
+  Array[Sap::BackendDatabase] $backend_databases          = [],
+  Optional[String] $router_oss_realm                      = undef,
+  Optional[Array[String]] $router_rules                   = undef,
+  Optional[String] $distro_text                           = undef
 ) inherits sap::params {
 
   # Fail if dependencies are not met
@@ -73,6 +80,12 @@ class sap (
         fail("Component '${component}' requires 'base'!")
       }
     }
+  }
+
+  # Fail if a backend_database is not specified for a node which is not
+  # 'database only' (we're assuming if base is enabled that's the case)
+  if ($base_enabled and empty($backend_databases)) {
+    fail('All application servers must specify a backend database!')
   }
 
   $base_extended_enabled = 'base_extended' in $enabled_components

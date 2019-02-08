@@ -7,7 +7,7 @@ hierarchy:
 
   - name: "OS/Architecture"
     paths:
-      - "os/%{facts.os.family}-family-%{facts.architecture}-arch.yaml"
+      - "os/%{facts.os.family}-family-%{facts.os.hardware}-arch.yaml"
       - "os/%{facts.os.family}-family-%{facts.os.release.major}.yaml"
       - "os/%{facts.os.family}-family.yaml"
       - "os/%{facts.os.name}.yaml"
